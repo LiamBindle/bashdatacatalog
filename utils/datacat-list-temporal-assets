@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+TRIM_LIST=$(mktemp)
+TEMPORAL_ASSETS=$(mktemp)
+awk -F ' +' '{print $2}' .assets.md5 | sed 's/^\*//g' | sed -n -f .temporal_assets.sed > $TEMPORAL_ASSETS
+
+if [ $# -ge 1 ]; then
+    awk -F ' +' -v threshold=$1 '{ if($1 < threshold) print $2 }' $TEMPORAL_ASSETS >> $TRIM_LIST
+fi
+
+if [ $# -ge 2 ]; then
+    awk -F ' +' -v threshold=$2 '{ if($1 > threshold) print $2 }' $TEMPORAL_ASSETS >> $TRIM_LIST
+fi
+
+awk -F ' +' '{print $2}' $TEMPORAL_ASSETS | grep -v -F -f $TRIM_LIST
+
+rm -f $TEMPORAL_ASSETS $TRIM_LIST

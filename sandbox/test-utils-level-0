@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+set -e
+
+DATACAT_DIR=$(realpath $(dirname "$0"))/..
+DATACAT_TESTS_DIR=$DATACAT_DIR/tests
+
+TEMP_1=$(mktemp)
+echo $TEMP_1 >> tempfiles.txt
+TEMP_2=$(mktemp)
+echo $TEMP_2 >> tempfiles.txt
+
+
+# Test for "datacat-dir-file-list"
+cat > $TEMP_1 << EOF
+./file1
+./file2
+./file3
+./sub1/subfile1
+./sub1/subfile2
+./sub1/subfile3
+EOF
+
+# Check that the file list is generated correctly (non cwd case)
+$DATACAT_DIR/utils/datacat-dir-file-list $DATACAT_TESTS_DIR/collection1 > $TEMP_2
+diff $TEMP_1 $TEMP_2
+
+# Check that the file list is generated correctly (cwd case)
+cd $DATACAT_TESTS_DIR/collection1
+$DATACAT_DIR/utils/datacat-dir-file-list > $TEMP_2
+diff $TEMP_1 $TEMP_2
