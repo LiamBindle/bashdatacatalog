@@ -3,6 +3,6 @@ set -u
 
 echo "Editing '.temporal_assets.sed' (editor: $EDITOR)"
 $EDITOR .temporal_assets.sed
-echo "Finished editing. The new temporal index is shown below."
+echo "Finished editing. The new temporal index of files in the cwd is shown below."
 echo ""
 find . -name .asset_patches -prune -o -type f \( ! -name '\.*' \) -print | sort | sed -n -f .temporal_assets.sed
