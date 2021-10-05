@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+FILE_LIST=$(mktemp)
+awk -F ' +' '{print $2}' .assets.md5 | sed 's/^\*//g' > $FILE_LIST
+
+MD5SUM_STDOUT=$(md5sum --quiet -c .assets.md5 2> /dev/null) 
+if [ $? -ne 0 ] ; then
+    MD5SUM_STDOUT=$(echo "$MD5SUM_STDOUT" | grep -o -F -f $FILE_LIST)
+    echo "$MD5SUM_STDOUT"
+fi
+
+rm -f $FILE_LIST
