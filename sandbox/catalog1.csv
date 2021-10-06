@@ -1,3 +1,3 @@
-Path to collection,Canonical collection (URL)
-collection1/,https://raw.githubusercontent.com/LiamBindle/data-catalog/master/sandbox/collection1/
-collection2/,https://raw.githubusercontent.com/LiamBindle/data-catalog/master/sandbox/collection2/
+Path to collection,Canonical collection (URL),Enabled,Notes
+collection1/,https://raw.githubusercontent.com/LiamBindle/data-catalog/master/sandbox/collection1/,1,
+collection2/,https://raw.githubusercontent.com/LiamBindle/data-catalog/master/sandbox/collection2/,1,

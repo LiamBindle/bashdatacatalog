@@ -1,0 +1,89 @@
+#!/usr/bin/env bash
+set -u
+
+COMMAND=$1
+shift
+
+THIS_SCRIPTS_DIRECTORY=$(realpath $(dirname "$0"))
+
+case "$COMMAND" in
+"list-assets")
+    EXE_SCRIPT=$THIS_SCRIPTS_DIRECTORY/utils/datacat-list-assets
+    ;;
+"list-temporalassets")
+    EXE_SCRIPT=$THIS_SCRIPTS_DIRECTORY/utils/datacat-list-temporal-assets
+    ;;
+"list-untracked")
+    EXE_SCRIPT=$THIS_SCRIPTS_DIRECTORY/utils/datacat-list-untracked
+    ;;
+"list-missing")
+    EXE_SCRIPT=$THIS_SCRIPTS_DIRECTORY/utils/datacat-list-missing
+    ;;
+"list-invalid")
+    EXE_SCRIPT=$THIS_SCRIPTS_DIRECTORY/utils/datacat-list-invalid
+    ;;
+"fetch")
+    EXE_SCRIPT=$THIS_SCRIPTS_DIRECTORY/utils/datacat-fetch-collection
+    ;;
+"admin-autoindex")
+    EXE_SCRIPT=$THIS_SCRIPTS_DIRECTORY/utils/datacat-auto-index
+    ;;
+"admin-edittemporal")
+    EXE_SCRIPT=$THIS_SCRIPTS_DIRECTORY/utils/datacat-edit-temporal
+    ;;
+"admin-cleanindex")
+    EXE_SCRIPT=$THIS_SCRIPTS_DIRECTORY/utils/datacat-clean-index
+    ;;
+"list"*)
+    echo "Invalid list command '$COMMAND'. See usage (--help) for the list commands."
+    exit 1
+    ;;
+*)
+    echo "Unknown command '$COMMAND'"
+    exit 1
+    ;;
+esac
+    
+# The remaining arguments are catalogs
+    
+COMBINED_CATALOG=$(mktemp)
+TEMP_FILE=$(mktemp)
+
+# Create a combined catalog from all the arguments
+while [ $# -gt 0 ]; do
+    if [ -d $1 ]; then
+        # if it's a directory, assume the directory is a collection
+        echo "$1,local,1," >> $COMBINED_CATALOG
+    else
+        tail -n +2 $1 >> $COMBINED_CATALOG
+    fi  
+    sort $COMBINED_CATALOG | uniq > $TEMP_FILE
+    cp $TEMP_FILE $COMBINED_CATALOG
+    shift
+done
+
+# Drop collections that aren't enabled
+awk -F',' '{ if($3 != 0){print $0} }' $COMBINED_CATALOG > $TEMP_FILE
+cp $TEMP_FILE $COMBINED_CATALOG
+
+# Run command in each collection
+WORKING_DIR=$(pwd)
+while read COLLECTION_LINE; do
+    COLLECTION_PATH=$(echo "$COLLECTION_LINE" |awk -F',' '{print $1}')
+    COLLECTION_URL=$(echo "$COLLECTION_LINE" |awk -F',' '{print $2}')
+    cd $COLLECTION_PATH
+    set -x
+    case $COMMAND in
+    "fetch")
+        $EXE_SCRIPT $COLLECTION_URL
+        ;;
+    *)
+        $EXE_SCRIPT
+        ;;
+    esac
+    set +x
+    cd $WORKING_DIR
+done < $COMBINED_CATALOG
+
+
+rm $COMBINED_CATALOG $TEMP_FILE
