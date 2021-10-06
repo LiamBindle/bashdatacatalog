@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+
+read -p "> Enter install prefix [$HOME]: " INSTALL_PREFIX
+INSTALL_PREFIX=${INSTALL_PREFIX:-$HOME}
+
+while [ ! -d $INSTALL_PREFIX ]; do
+    read -p "> Invalid path. Enter install prefix [$HOME]: " INSTALL_PREFIX
+    INSTALL_PREFIX=${INSTALL_PREFIX:-$HOME}
+done
+
+cd $INSTALL_PREFIX
+
+if [ -d .s2-datacat ]; then
+    echo "An installation already exists. Updating it ..."
+    cd .s2-datacat
+    git pull
+    cd ..
+else
+    echo "Downloading ..."
+    git clone git@github.com:LiamBindle/s2-datacat.git .s2-datacat
+fi
+
+while true; do
+    read -p "> Do you want to add this installation to your \$PATH? [Y/n]: " YESNO
+    YESNO=${YESNO:-Y}
+    case $YESNO in
+    [Yy])
+        read -p "> Enter your environment file [$HOME/.bashrc]: " ENVIRONMENT_FILE
+        ENVIRONMENT_FILE=${ENVIRONMENT_FILE:-$HOME/.bashrc}
+
+        while [ ! -f $ENVIRONMENT_FILE ]; do
+            read -p "> Invalid path. Enter your environment file [$HOME/.bashrc]: " ENVIRONMENT_FILE
+            ENVIRONMENT_FILE=${ENVIRONMENT_FILE:-$HOME/.bashrc}
+        done
+
+        ENTRY='export PATH=$PATH:'$INSTALL_PREFIX/.s2-datacat
+        grep -F "$ENTRY" $ENVIRONMENT_FILE || echo "$ENTRY" >> $ENVIRONMENT_FILE
+        break
+        ;;
+    [Nn])
+        echo "USER ACTION: You should manually add '$INSTALL_PREFIX/.s2-datacat' to \$PATH in your environment set up." 
+        break
+        ;;
+    * ) 
+        echo "> Please answer Y or N."
+        ;;
+    esac
+done
+
+echo "Installation complete."
