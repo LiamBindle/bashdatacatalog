@@ -1,9 +1,0 @@
---- .assets.md5	1969-12-31 17:00:00.000000000 -0700
-+++ /tmp/tmp.FzFyFuxcpp	2021-10-05 15:52:09.708503940 -0600
-@@ -0,0 +1,6 @@
-+a5890ace30a3e84d9118196c161aeec2 *./file1
-+e555d324f7aa42e894fc9e2bf484c7dc *./file2
-+e76fa6089e1b4cffd1d469bf17389c21 *./file3
-+d096b4ac2213e3b843f4d04fa44ef648 *./sub1/subfile1
-+9db5e7c4668f7154965a9b5ce2193677 *./sub1/subfile2
-+ca45002335a51f30d1fe98019b8c1915 *./sub1/subfile3

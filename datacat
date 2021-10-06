@@ -41,6 +41,16 @@ case "$COMMAND" in
     echo "Invalid list command '$COMMAND'. See usage (--help) for the list commands."
     exit 1
     ;;
+"self-test")
+    # Special case: run immediately and exit
+    $THIS_SCRIPTS_DIRECTORY/utils/datacat-self-test
+    exit 0
+    ;;
+"self-update")
+    # Special case: run immediately and exit
+    cd $THIS_SCRIPTS_DIRECTORY
+    git pull
+    ;;
 *)
     echo "Unknown command '$COMMAND'"
     exit 1
