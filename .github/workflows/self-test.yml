@@ -1,0 +1,36 @@
+name: Self Test
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-20.04]
+
+      # fail-fast is set to 'true' here which is good for production, but when
+      # debugging, set to 'false'. fail-fast means if *any* ci test in the matrix fails
+      # GitHub Actions will stop any other test immediately. So good for production, bad
+      # when trying to figure something out. For more info see:
+      # https://www.edwardthomson.com/blog/github_actions_6_fail_fast_matrix_workflows.html
+
+      fail-fast: false
+
+    name: ${{ matrix.os }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 1
+      - name: Test
+        run: |
+          export PATH=$PATH:$(pwd)
+          datacat self-test

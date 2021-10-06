@@ -34,7 +34,7 @@ while true; do
         done
 
         ENTRY='export PATH=$PATH:'$INSTALL_PREFIX/.s2-datacat
-        grep -F "$ENTRY" $ENVIRONMENT_FILE || echo "$ENTRY" >> $ENVIRONMENT_FILE
+        grep -F "$ENTRY" $ENVIRONMENT_FILE || (echo "$ENTRY" >> $ENVIRONMENT_FILE; export PATH=$PATH:$INSTALL_PREFIX/.s2-datacat)
         break
         ;;
     [Nn])
