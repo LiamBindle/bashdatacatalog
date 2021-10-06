@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 set -u
+set -e
+
+# Parse the command
 
 COMMAND=$1
 shift
@@ -44,8 +47,8 @@ case "$COMMAND" in
     ;;
 esac
     
-# The remaining arguments are catalogs
-    
+# The remaining arguments are catalogs or paths to collections
+
 COMBINED_CATALOG=$(mktemp)
 TEMP_FILE=$(mktemp)
 
@@ -53,7 +56,8 @@ TEMP_FILE=$(mktemp)
 while [ $# -gt 0 ]; do
     if [ -d $1 ]; then
         # if it's a directory, assume the directory is a collection
-        echo "$1,local,1," >> $COMBINED_CATALOG
+        COLLECTION_DIR=$(echo "$1" | sed 's#/*$##g')  # strip trailing slashes
+        echo "$COLLECTION_DIR,local,1," >> $COMBINED_CATALOG
     else
         tail -n +2 $1 >> $COMBINED_CATALOG
     fi  
@@ -72,16 +76,17 @@ while read COLLECTION_LINE; do
     COLLECTION_PATH=$(echo "$COLLECTION_LINE" |awk -F',' '{print $1}')
     COLLECTION_URL=$(echo "$COLLECTION_LINE" |awk -F',' '{print $2}')
     cd $COLLECTION_PATH
-    set -x
     case $COMMAND in
     "fetch")
         $EXE_SCRIPT $COLLECTION_URL
+        ;;
+    "list-"*)
+        $EXE_SCRIPT | sed "s#^\./#./$COLLECTION_PATH/#g"
         ;;
     *)
         $EXE_SCRIPT
         ;;
     esac
-    set +x
     cd $WORKING_DIR
 done < $COMBINED_CATALOG
 
