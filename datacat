@@ -11,6 +11,7 @@ COMMAND=$1
 shift
 
 THIS_SCRIPTS_DIRECTORY=$(realpath $(dirname "$0"))
+FILTER_TEMPORAL_ASSETS_EXE=$THIS_SCRIPTS_DIRECTORY/utils/datacat-filter-temporal-assets
 
 case "$COMMAND" in
 "list-assets")
@@ -60,40 +61,54 @@ case "$COMMAND" in
     ;;
 esac
 
-# List commands have an optional FMT={relative, absolute, url, rsync, globus} argument
+# List commands have an optional FMT={relative, absolute, url, rsync, globus}, FROM=<date>, TO=<date> arguments
+LIST_FMT="relative"
+FILTER_FROM=""
+FILTER_TO=""
 case "$COMMAND" in 
 "list-"*)
-    case "$1" in 
-    "FMT=relative")
-        LIST_FMT="relative"
-        shift
-        ;;
-    "FMT=rsync")
-        LIST_FMT="relative"
-        shift
-        ;;
-    "FMT=absolute")
-        LIST_FMT="absolute"
-        shift
-        ;;
-    "FMT=http")
-        LIST_FMT="http"
-        shift
-        ;;
-    "FMT=globus")
-        LIST_FMT="globus"
-        read -e -p "> Source endpoint root directory: " GLOBUS_SRC_ROOT
-        read -e -p "> Destination endpoint root directory: " GLOBUS_DST_ROOT
-        shift
-        ;;
-    "FMT="*)
-        echo "Unknown list format $1"
-        exit 1
-        ;;
-    *)
-        LIST_FMT="relative"
-        ;;
-    esac
+    while [ $# -gt 0 ]; do
+        case "$1" in 
+        "FMT=relative")
+            LIST_FMT="relative"
+            shift
+            ;;
+        "FMT=rsync")
+            LIST_FMT="relative"
+            shift
+            ;;
+        "FMT=absolute")
+            LIST_FMT="absolute"
+            shift
+            ;;
+        "FMT=http")
+            LIST_FMT="http"
+            shift
+            ;;
+        "FMT=globus")
+            LIST_FMT="globus"
+            read -e -p "> Source endpoint root directory: " GLOBUS_SRC_ROOT
+            read -e -p "> Destination endpoint root directory: " GLOBUS_DST_ROOT
+            shift
+            ;;
+        "FMT="*)
+            echo "Unknown list format $1"
+            exit 1
+            ;;
+        "FROM="*)
+            FILTER_FROM=$(echo "$1" | sed 's/FROM=//g')
+            shift
+            ;;
+        "TO="*)
+            FILTER_TO=$(echo "$1" | sed 's/TO=//g')
+            shift
+            ;;
+        *)
+            break
+            ;;
+        esac
+
+    done
 esac
     
 # The remaining arguments are catalogs or paths to collections
@@ -133,13 +148,13 @@ while read COLLECTION_LINE; do
         ;;
     "list-"*)
         if [ "$LIST_FMT" = "relative" ]; then
-            $EXE_SCRIPT | sed "s#^\./#./$COLLECTION_PATH/#g"
+            $EXE_SCRIPT | $FILTER_TEMPORAL_ASSETS_EXE $FILTER_FROM $FILTER_TO | sed "s#^\./#./$COLLECTION_PATH/#g"
         elif [ "$LIST_FMT" = "absolute" ]; then
-            $EXE_SCRIPT | sed "s#^\./#$WORKING_DIR/$COLLECTION_PATH/#g"
+            $EXE_SCRIPT | $FILTER_TEMPORAL_ASSETS_EXE $FILTER_FROM $FILTER_TO | sed "s#^\./#$WORKING_DIR/$COLLECTION_PATH/#g"
         elif [ "$LIST_FMT" = "http" ]; then
-            $EXE_SCRIPT | sed "s#^\./#$COLLECTION_URL/#g"
+            $EXE_SCRIPT | $FILTER_TEMPORAL_ASSETS_EXE $FILTER_FROM $FILTER_TO | sed "s#^\./#$COLLECTION_URL/#g"
         elif [ "$LIST_FMT" = "globus" ]; then
-            $EXE_SCRIPT | sed "s#^\./\(.*\)#$GLOBUS_SRC_ROOT/$COLLECTION_PATH/\1  $GLOBUS_DST_ROOT/$COLLECTION_PATH/\1/#g" > $TEMP_FILE
+            $EXE_SCRIPT | $FILTER_TEMPORAL_ASSETS_EXE $FILTER_FROM $FILTER_TO | sed "s#^\./\(.*\)#$GLOBUS_SRC_ROOT/$COLLECTION_PATH/\1  $GLOBUS_DST_ROOT/$COLLECTION_PATH/\1/#g" > $TEMP_FILE
             column -t $TEMP_FILE
         else
             echo "Unknown list format ($LIST_FMT)"

@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+if [ ! -z ${DEBUG+x} ]; then
+    set -x
+fi
 set -e
 set -u
 
@@ -18,8 +21,8 @@ datacat admin-autoindex catalog*.csv
 
 TEMP_FILE=$(mktemp)
 echo $TEMP_FILE >> tempfiles.txt
-TEMP_2=$(mktemp)
-echo $TEMP_2 >> tempfiles.txt
+TEMP_FILE_2=$(mktemp)
+echo $TEMP_FILE_2 >> tempfiles.txt
 
 # Check that collection1/.assets.md5 is it's expected value
 cat > $TEMP_FILE << EOF
@@ -50,5 +53,41 @@ a5890ace30a3e84d9118196c161aeec2 *./file3
 EOF
 
 diff -B $TEMP_FILE collection2/.assets.md5
+
+cat > $TEMP_FILE << EOF
+./collection1/file1
+./collection1/file2
+./collection1/file3
+./collection1/sub1/subfile1
+./collection1/sub1/subfile2
+./collection1/sub1/subfile3
+./collection2/2019/file-20190203
+./collection2/2019/file-20190403
+./collection2/file1
+./collection2/file2
+./collection2/file3
+EOF
+
+datacat list-assets FMT=rsync FROM=2019-01 TO=2019-05 catalog1.csv > $TEMP_FILE_2
+
+diff -B $TEMP_FILE $TEMP_FILE_2
+
+datacat list-assets FMT=rsync FROM=2019-01 TO=2019-05 collection2 > $TEMP_FILE_2
+
+
+cat > $TEMP_FILE << EOF
+./collection2/2019/file-20190203
+./collection2/2019/file-20190403
+./collection2/file1
+./collection2/file2
+./collection2/file3
+EOF
+
+diff -B $TEMP_FILE $TEMP_FILE_2
+
+datacat list-assets FMT=rsync FROM=2019-01 TO=2019-05 collection2/ > $TEMP_FILE_2
+
+diff -B $TEMP_FILE $TEMP_FILE_2
+
 
 echo "Finished self test. (status: TESTS PASSED)"
