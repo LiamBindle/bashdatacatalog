@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+if [ ! -z ${DEBUG+x} ]; then
+    set -x
+fi
+
+set -e
+set -u
+
+USAGE="""Permanently deletes collection metadata in the CWD.  
+
+Usage:
+
+  bashdatacatalog-cleanindex 
+
+    Deletes '.assets.md5' and '.asset_patches/'.
+
+  bashdatacatalog-cleanindex {-h | --help}
+  
+    Prints this help message.
+"""
+
+if [[ ( $* == --help ) ||  ( $* == -h ) ]]; then 
+   echo "$USAGE"
+   exit 1
+fi 
+
+rm -f .assets.md5
+rm -rf .asset_patches

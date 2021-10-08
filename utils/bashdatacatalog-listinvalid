@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+if [ ! -z ${DEBUG+x} ]; then
+    set -x
+fi
+USAGE="""Lists the files in the local collection that are invalid or missing. Invalid
+files are those whose MD5 sums do not match those in the collection's metadata.
+An invalid file may be caused by an incomplete download, corruption, or 
+if the end-user modifies the file.
+
+Usage:
+
+  bashdatacatalog-listinvalid
+
+    Lists the missing files in the local the collection.
+
+  bashdatacatalog-listinvalid {-h | --help}
+  
+    Prints this help message.
+"""
+
+if [[ ( $* == --help ) ||  ( $* == -h ) ]]; then 
+   echo "$USAGE"
+   exit 1
+fi 
+
+FILE_LIST=$(mktemp)
+awk -F ' +' '{print $2}' .assets.md5 | sed 's/^\*//g' > $FILE_LIST
+
+MD5SUM_STDOUT=$(md5sum --quiet -c .assets.md5 2> /dev/null) 
+if [ $? -ne 0 ] ; then
+    MD5SUM_STDOUT=$(echo "$MD5SUM_STDOUT" | grep -o -F -f $FILE_LIST)
+    echo "$MD5SUM_STDOUT"
+fi
+
+rm -f $FILE_LIST

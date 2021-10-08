@@ -1,6 +1,0 @@
-#!/usr/bin/env bash
-set -e
-set -u
-
-rm -f .assets.md5
-rm -rf .asset_patches

@@ -1,5 +1,28 @@
 #!/usr/bin/env bash
+if [ ! -z ${DEBUG+x} ]; then
+    set -x
+fi
 set -u
+
+USAGE="""Fetches collection metadata from a remote. This can be used to initialize 
+or update the collection metadata of the CWD.  
+
+Usage:
+
+  bashdatacatalog-fetch URL
+
+    URL:    The URL of the remote collection. The remote collection's metadata 
+            is downloaded to the CWD.
+
+  bashdatacatalog-fetch {-h | --help}
+  
+    Prints this help message.
+"""
+
+if [[ ( $* == --help ) ||  ( $* == -h ) || $# -eq 0 ]]; then 
+   echo "$USAGE"
+   exit 1
+fi 
 
 function download_file() {
     URL=$1

@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+if [ ! -z ${DEBUG+x} ]; then
+    set -x
+fi
+USAGE="""Lists the untracked assets in the CWD. These are files that are present on the 
+local file system, but absent in the collection's metadata.     
+
+Usage:
+
+  bashdatacatalog-listuntracked
+
+    Lists the untracked assets in the CWD.  
+
+  bashdatacatalog-listuntracked {-h | --help}
+  
+    Prints this help message.
+"""
+
+if [[ ( $* == --help ) ||  ( $* == -h ) ]]; then 
+   echo "$USAGE"
+   exit 1
+fi 
+
+FILE_LIST=$(mktemp)
+awk -F ' +' '{print $2}' .assets.md5 | sed 's/^\*//g' > $FILE_LIST
+
+find . -name .asset_patches -prune -o -type f \( ! -name '\.*' \) -print | sort | grep -v -F -f $FILE_LIST
+
+rm -f $FILE_LIST

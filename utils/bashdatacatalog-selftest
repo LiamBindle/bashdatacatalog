@@ -7,17 +7,17 @@ set -u
 
 echo "Starting self test. Any error indicate that the test failed."
 
-DATACAT_DIR=$(realpath $(dirname "$0"))/..
-DATACAT_SANDBOX_DIR=$DATACAT_DIR/sandbox
+BDC_DIR=$(realpath $(dirname "$0"))/..
+BDC_SANDBOX_DIR=$BDC_DIR/sandbox
 
-cd $DATACAT_SANDBOX_DIR
+cd $BDC_SANDBOX_DIR
 
-datacat admin-cleanindex catalog*.csv
+bashdatacatalog admin-cleanindex catalog*.csv
 
 [ ! -f collection1/.assets.md5 ] || (echo "self test failed" ; exit 1)
 [ ! -f collection2/.assets.md5 ] || (echo "self test failed" ; exit 1)
 
-datacat admin-autoindex catalog*.csv
+bashdatacatalog admin-autoindex catalog*.csv
 
 TEMP_FILE=$(mktemp)
 echo $TEMP_FILE >> tempfiles.txt
@@ -68,11 +68,11 @@ cat > $TEMP_FILE << EOF
 ./collection2/file3
 EOF
 
-datacat list-assets FMT=rsync FROM=2019-01 TO=2019-05 catalog1.csv > $TEMP_FILE_2
+bashdatacatalog list-assets FMT=rsync FROM=2019-01 TO=2019-05 catalog1.csv > $TEMP_FILE_2
 
 diff -B $TEMP_FILE $TEMP_FILE_2
 
-datacat list-assets FMT=rsync FROM=2019-01 TO=2019-05 collection2 > $TEMP_FILE_2
+bashdatacatalog list-assets FMT=rsync FROM=2019-01 TO=2019-05 collection2 > $TEMP_FILE_2
 
 
 cat > $TEMP_FILE << EOF
@@ -85,7 +85,7 @@ EOF
 
 diff -B $TEMP_FILE $TEMP_FILE_2
 
-datacat list-assets FMT=rsync FROM=2019-01 TO=2019-05 collection2/ > $TEMP_FILE_2
+bashdatacatalog list-assets FMT=rsync FROM=2019-01 TO=2019-05 collection2/ > $TEMP_FILE_2
 
 diff -B $TEMP_FILE $TEMP_FILE_2
 

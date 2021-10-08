@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+USAGE="""Lists the path to assets in the collection.  
+
+Usage:
+
+  bashdatacatalog-listassets
+
+    Lists the path to assets in the collection.
+
+  bashdatacatalog-listassets {-h | --help}
+  
+    Prints this help message.
+"""
+
+if [[ ( $* == --help ) ||  ( $* == -h ) ]]; then 
+   echo "$USAGE"
+   exit 1
+fi 
+
+if [ ! -z ${DEBUG+x} ]; then
+    set -x
+fi
+
+awk -F ' +' '{print $2}' .assets.md5 | sed 's/^\*//g'

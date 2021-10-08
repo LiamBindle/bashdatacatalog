@@ -1,8 +1,0 @@
-#!/usr/bin/env bash
-
-FILE_LIST=$(mktemp)
-find . -name .asset_patches -prune -o -type f \( ! -name '\.*' \) -print | sort > $FILE_LIST
-
-awk -F ' +' '{print $2}' .assets.md5 | sed 's/^\*//g' | grep -v -F -f $FILE_LIST
-
-rm -f $FILE_LIST
