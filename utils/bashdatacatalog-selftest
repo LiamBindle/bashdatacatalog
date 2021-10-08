@@ -12,12 +12,12 @@ BDC_SANDBOX_DIR=$BDC_DIR/sandbox
 
 cd $BDC_SANDBOX_DIR
 
-bashdatacatalog admin-cleanindex catalog*.csv
+bashdatacatalog catalog*.csv admin-cleanindex
 
 [ ! -f collection1/.assets.md5 ] || (echo "self test failed" ; exit 1)
 [ ! -f collection2/.assets.md5 ] || (echo "self test failed" ; exit 1)
 
-bashdatacatalog admin-autoindex catalog*.csv
+bashdatacatalog catalog*.csv admin-autoindex
 
 TEMP_FILE=$(mktemp)
 echo $TEMP_FILE >> tempfiles.txt
@@ -68,12 +68,9 @@ cat > $TEMP_FILE << EOF
 ./collection2/file3
 EOF
 
-bashdatacatalog list-assets FMT=rsync FROM=2019-01 TO=2019-05 catalog1.csv > $TEMP_FILE_2
+bashdatacatalog catalog1.csv list-assets rsync 2019-01 2019-05 > $TEMP_FILE_2
 
 diff -B $TEMP_FILE $TEMP_FILE_2
-
-bashdatacatalog list-assets FMT=rsync FROM=2019-01 TO=2019-05 collection2 > $TEMP_FILE_2
-
 
 cat > $TEMP_FILE << EOF
 ./collection2/2019/file-20190203
@@ -83,9 +80,7 @@ cat > $TEMP_FILE << EOF
 ./collection2/file3
 EOF
 
-diff -B $TEMP_FILE $TEMP_FILE_2
-
-bashdatacatalog list-assets FMT=rsync FROM=2019-01 TO=2019-05 collection2/ > $TEMP_FILE_2
+bashdatacatalog collection2 list-assets relative 2019-01 2019-05  > $TEMP_FILE_2
 
 diff -B $TEMP_FILE $TEMP_FILE_2
 
