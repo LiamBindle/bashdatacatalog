@@ -102,9 +102,6 @@ case "$COMMAND" in
 "admin-autoindex")
     BDC_SCRIPT=$THIS_SCRIPTS_DIRECTORY/utils/bashdatacatalog-autoindex
     ;;
-"admin-edittemporal")
-    BDC_SCRIPT=$THIS_SCRIPTS_DIRECTORY/utils/bashdatacatalog-edittemporal
-    ;;
 "admin-cleanindex")
     BDC_SCRIPT=$THIS_SCRIPTS_DIRECTORY/utils/bashdatacatalog-cleanindex
     ;;
