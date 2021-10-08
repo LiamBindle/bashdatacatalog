@@ -10,14 +10,14 @@ done
 
 cd $INSTALL_PREFIX
 
-if [ -d .s2-datacat ]; then
+if [ -d .bashdatacatalog ]; then
     echo "An installation already exists. Updating it ..."
-    cd .s2-datacat
+    cd .bashdatacatalog
     git pull
     cd ..
 else
     echo "Downloading ..."
-    git clone git@github.com:LiamBindle/s2-datacat.git .s2-datacat
+    git clone git@github.com:LiamBindle/bashdatacatalog.git .bashdatacatalog
 fi
 
 while true; do
@@ -33,12 +33,12 @@ while true; do
             ENVIRONMENT_FILE=${ENVIRONMENT_FILE:-$HOME/.bashrc}
         done
 
-        ENTRY='export PATH=$PATH:'$INSTALL_PREFIX/.s2-datacat
-        grep -F "$ENTRY" $ENVIRONMENT_FILE || (echo "$ENTRY" >> $ENVIRONMENT_FILE; export PATH=$PATH:$INSTALL_PREFIX/.s2-datacat)
+        ENTRY='export PATH=$PATH:'$INSTALL_PREFIX/.bashdatacatalog
+        grep -F "$ENTRY" $ENVIRONMENT_FILE || (echo "$ENTRY" >> $ENVIRONMENT_FILE; export PATH=$PATH:$INSTALL_PREFIX/.bashdatacatalog)
         break
         ;;
     [Nn])
-        echo "USER ACTION: You should manually add '$INSTALL_PREFIX/.s2-datacat' to \$PATH in your environment set up." 
+        echo "USER ACTION: You should manually add '$INSTALL_PREFIX/.bashdatacatalog' to \$PATH in your environment set up." 
         break
         ;;
     * ) 
