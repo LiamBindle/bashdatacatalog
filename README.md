@@ -5,7 +5,7 @@
 
 Run this command to launch the installer:
 ```console
-$ bash <(curl -s https://raw.githubusercontent.com/LiamBindle/s2-datacat/master/utils/install.sh)
+bash <(curl -s https://raw.githubusercontent.com/LiamBindle/s2-datacat/master/utils/install.sh)
 ```
 
 Follow the prompts. The defaults should be okay (hit enter):
@@ -22,15 +22,17 @@ Receiving objects: 100% (77/77), 10.37 KiB | 5.19 MiB/s, done.
 Resolving deltas: 100% (23/23), done.
 > Do you want to add this installation to your $PATH? [Y/n]: 
 > Enter your environment file [/home/liambindle/.bashrc]: 
-export PATH=$PATH:/home/liambindle/.bashdatacatalog
+USER ACTION: You should manually add '/home/liambindle/.bashdatacatalog' to $PATH in your environment set up.
 Installation complete.
 ```
+
+Restart your terminal. Now you should be able to run `bashdatacatalog` commands. 
 
 ## How to update
 
 You can automatically update, at any time, by running the `self-update` command:
 
 ```console
-$ bashdatacatalog self-update
+bashdatacatalog self-update
 ```
 

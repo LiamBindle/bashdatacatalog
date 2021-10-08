@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 
-read -p "> Enter install prefix [$HOME]: " INSTALL_PREFIX
+read -e -p "> Enter install prefix [$HOME]: " INSTALL_PREFIX
 INSTALL_PREFIX=${INSTALL_PREFIX:-$HOME}
 
 while [ ! -d $INSTALL_PREFIX ]; do
-    read -p "> Invalid path. Enter install prefix [$HOME]: " INSTALL_PREFIX
+    read -e -p "> Invalid path. Enter install prefix [$HOME]: " INSTALL_PREFIX
     INSTALL_PREFIX=${INSTALL_PREFIX:-$HOME}
 done
 
@@ -25,7 +25,7 @@ while true; do
     YESNO=${YESNO:-Y}
     case $YESNO in
     [Yy])
-        read -p "> Enter your environment file [$HOME/.bashrc]: " ENVIRONMENT_FILE
+        read -e -p "> Enter your environment file [$HOME/.bashrc]: " ENVIRONMENT_FILE
         ENVIRONMENT_FILE=${ENVIRONMENT_FILE:-$HOME/.bashrc}
 
         while [ ! -f $ENVIRONMENT_FILE ]; do
@@ -34,7 +34,8 @@ while true; do
         done
 
         ENTRY='export PATH=$PATH:'$INSTALL_PREFIX/.bashdatacatalog
-        grep -F "$ENTRY" $ENVIRONMENT_FILE || (echo "$ENTRY" >> $ENVIRONMENT_FILE; export PATH=$PATH:$INSTALL_PREFIX/.bashdatacatalog)
+        grep -F "$ENTRY" $ENVIRONMENT_FILE || echo "$ENTRY" >> $ENVIRONMENT_FILE
+        echo 'USER ACTION: bashdatacatalog is now available. Please restart your terminal.'
         break
         ;;
     [Nn])
