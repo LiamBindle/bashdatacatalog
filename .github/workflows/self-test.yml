@@ -33,4 +33,4 @@ jobs:
       - name: Test
         run: |
           export PATH=$PATH:$(pwd)
-          datacat self-test
+          bashdatacatalog self-test
