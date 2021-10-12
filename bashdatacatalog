@@ -129,6 +129,7 @@ while read COLLECTION_LINE; do
     COLLECTION_PATH=$(echo "$COLLECTION_PATH" | sed 's#/*$##g')  # strip trailing slashes
     COLLECTION_URL=$(echo "$COLLECTION_LINE" | awk -F',' '{print $2}')
     COLLECTION_URL=$(echo "$COLLECTION_URL" | sed 's#/*$##g')  # strip trailing slashes
+    mkdir -p $COLLECTION_PATH
     cd $COLLECTION_PATH
     case $COMMAND in
     "fetch")
