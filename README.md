@@ -3,8 +3,11 @@ bashdatacatalog is a simple data catalogging tool. bashdatacatalog can generate 
 
 ## Cheat sheet
 
+Below is a quick overview of the most useful commands (note that `my_catalog1.csv` is a placeholder for your catalog's file name):
+
 | Command | Description |
 |:---|:---|
+| `bashdatacatalog --help` | Shows the usage of `bashdatacatalog` |
 | `bashdatacatalog my_catalog.csv fetch` | Fetch (update) metadata for all collections |
 | `bashdatacatalog my_catalog.csv list-missing` | List all the files that are missing locally |
 | `bashdatacatalog my_catalog.csv list-missing url` | List the **url** of the files that are missing locally |
