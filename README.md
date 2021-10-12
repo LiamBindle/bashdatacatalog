@@ -1,5 +1,35 @@
 # bashdatacatalog
+bashdatacatalog is a simple data catalogging tool. bashdatacatalog can generate lists of files that are missing or corrupt (on the local file system) relative to a remote copy of the collection. This is useful for generating download lists and transfers lists. bashdatacatalog can generate lists for HTTP downloads, local transfers with `rsync`, and Globus transfers. bashdatacatalog also supports the notion of "temporal assets" for date-stamped data files so lists can be filtered according to a date range.
 
+## Cheat sheet
+
+| Command | Description |
+|:---|:---|
+| `bashdatacatalog my_catalog.csv fetch` | Fetch (update) metadata for all collections |
+| `bashdatacatalog my_catalog.csv list-missing` | List all the files that are missing locally |
+| `bashdatacatalog my_catalog.csv list-missing url` | List the **url** of the files that are missing locally |
+| `bashdatacatalog my_catalog.csv list-invalid` | List all the files that are invalid (bad checksum or missing) |
+| `bashdatacatalog my_catalog.csv list-invalid url` | List the **url** of the files that are invalid (bad checksum or missing) |
+| `bashdatacatalog my_catalog.csv list-assets` | List all the files in the catalog |
+
+All `list-*` commands have three optional arguments: the list format, the starting date for temporal assets, and the ending date for temporal assets. The supported list formats are:
+- `relative` &mdash; relative paths to the files
+- `absolute` &mdash; absolute paths to the files
+- `url` &mdash; URLs for each file
+- `rsync` &mdash; transfer list for use with `rsync --file-from=`
+- `globus=/foo1,/foo2` &mdash; transfer list for use with `globus --batch`
+
+The start/end date for temporal assets should be ISO 8601 dates. For example
+
+```console
+$ bashdatacatalog my_catalog.csv list-missing url 2018-01-01 2019-01-01  # lists missing files for 2018
+```
+
+All commands can be run on multiple catalogs at the same time. For example
+
+```console
+$ bashdatacatalog my_catalog1.csv my_catalog2.csv list-assets  # lists all the files in both catalogs
+```
 
 ## How to install
 
@@ -55,7 +85,7 @@ To begin, download the catalog file:
 $ wget https://raw.githubusercontent.com/LiamBindle/bashdatacatalog/main/sandbox/catalog1.csv
 ```
 
-Before you can run `bashdatacatalog` commands you need to fetch the metadata for the collections: 
+Before you can run `bashdatacatalog` commands, you need to fetch the metadata for the collections: 
 ```console
 $ bashdatacatalog catalog1.csv fetch
 ```
