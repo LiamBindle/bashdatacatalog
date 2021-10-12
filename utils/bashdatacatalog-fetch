@@ -28,7 +28,7 @@ function download_file() {
     URL=$1
     FILE_PATH=$2
     OK_CODES=$3
-    HTTP_CODE=$(curl --write-out "%{http_code}" --silent -k -n -L -g --url $URL -o $FILE_PATH --create-dirs)
+    HTTP_CODE=$(curl -f --write-out "%{http_code}" --silent -k -n -L -g --url $URL -o $FILE_PATH --create-dirs)
     if echo "$HTTP_CODE" | grep -q "$OK_CODES" ; then
         return 0
     else
