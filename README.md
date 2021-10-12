@@ -38,7 +38,7 @@ $ bashdatacatalog my_catalog1.csv my_catalog2.csv list-assets  # lists all the f
 
 Run this command to launch the installer:
 ```console
-bash <(curl -s https://raw.githubusercontent.com/LiamBindle/s2-datacat/master/utils/install.sh)
+bash <(curl -s https://raw.githubusercontent.com/LiamBindle/bashdatacatalog/main/utils/install.sh)
 ```
 
 Follow the prompts. The defaults should be okay (hit enter):
