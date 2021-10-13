@@ -16,31 +16,37 @@ Usage:
 
     collection: The collection to execute COMMAND on.
 
-Listing commands (COMMAND ARGS..):
+Catalog/collection commands (COMMAND ARGS..):
 
-  list-assets  [format] [start] [end]       Lists files
-  list-missing [format] [start] [end]       Lists missing files
-  list-invalid [format] [start] [end]       Lists invalid files
-  list-untracked                            Lists untracked files
+    Listing commands (COMMAND ARGS..):
 
-  ARGS..:
-    
-    format:     The output list format. Valid options are 
-                  relative
-                  absolute
-                  url=https://example.com  (base url provided by catalog)
-                  rsync
-                  globus=/src,/dst
+        list-assets  [format] [start] [end]       Lists files
+        list-missing [format] [start] [end]       Lists missing files
+        list-invalid [format] [start] [end]       Lists invalid files
+        list-untracked                            Lists untracked files
 
-Update commands (COMMAND ARGS..):
+    ARGS..:
+        
+        format:     The output list format. Valid options are 
+                    relative
+                    absolute
+                    url=https://example.com  (base url provided by catalog)
+                    rsync
+                    globus=/src,/dst
 
-    fetch                                   Updates collection metadata from
-                                            remote collections.
+        start:      The filtering start date (format: YYYY-MM-DD).
 
-Meta commands (COMMAND ARGS..):
+        end:        The filtering end date (format: YYYY-MM-DD). 
 
-    self-test                               Runs bashdatacatalog self test
-    self-update                             Updates bashdatacatalog
+    Update commands (COMMAND ARGS..):
+
+        fetch                                   Updates collection metadata 
+                                                from remote collections.
+
+    Meta commands (COMMAND ARGS..):
+
+        self-test                               Runs bashdatacatalog self test
+        self-update                             Updates bashdatacatalog
 """
 if [[ ( $* == --help ) ||  ( $* == -h ) || $# -lt 1 ]]; then 
     echo "$USAGE"

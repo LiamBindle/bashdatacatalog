@@ -24,6 +24,6 @@ fi
 FILE_LIST=$(mktemp)
 awk -F ' +' '{print $2}' .assets.md5 | sed 's/^\*//g' > $FILE_LIST
 
-find . -name .asset_patches -prune -o -type f \( ! -name '\.*' \) -print | sort | grep -v -F -f $FILE_LIST
+find -L . -name .asset_patches -prune -o -type f \( ! -name '\.*' \) -print | sort | grep -v -F -f $FILE_LIST
 
 rm -f $FILE_LIST

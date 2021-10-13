@@ -38,7 +38,7 @@ fi
 
 # Make the file list for the cwd
 FILE_LIST=$(mktemp)
-find . -name .asset_patches -prune -o -type f \( ! -name '\.*' \) -print | sort > $FILE_LIST
+find -L . -name .asset_patches -prune -o -type f \( ! -name '\.*' \) -print | sort > $FILE_LIST
 
 # Make temporary files
 STAGED_ASSETS=$(mktemp)     # "staged" copy of the new .assets.md5
