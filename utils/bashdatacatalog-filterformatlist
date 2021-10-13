@@ -79,15 +79,23 @@ cat - > $ASSETS
 TRIM_LIST=$(mktemp)
 TEMPORAL_ASSETS=$(mktemp)
 
+AWK_CMP_LT='''
+{ if(length($1) > length(threshold)) { cmplen=length(threshold) } else { cmplen=length($1) }; if(substr($1,0,cmplen) < substr(threshold,0,cmplen)) print $2 }
+'''
+
+AWK_CMP_GT='''
+{ if(length($1) > length(threshold)) { cmplen=length(threshold) } else { cmplen=length($1) }; if(substr($1,0,cmplen) > substr(threshold,0,cmplen)) print $2 }
+'''
+
 if [ -f .temporal_assets.sed ]; then
     sed -n -f .temporal_assets.sed $ASSETS > $TEMPORAL_ASSETS
 
     if [ $# -ge 1 ]; then
-        awk -F ' +' -v threshold=$1 '{ if($1 < threshold) print $2 }' $TEMPORAL_ASSETS >> $TRIM_LIST
+        awk -F ' +' -v threshold=$1 "$AWK_CMP_LT" $TEMPORAL_ASSETS >> $TRIM_LIST
     fi
 
     if [ $# -ge 2 ]; then
-        awk -F ' +' -v threshold=$2 '{ if($1 > threshold) print $2 }' $TEMPORAL_ASSETS >> $TRIM_LIST
+        awk -F ' +' -v threshold=$2 "$AWK_CMP_GT" $TEMPORAL_ASSETS >> $TRIM_LIST
     fi
 
     grep -v -F -f $TRIM_LIST $ASSETS | sed "$FORMAT_SED_EXPR"
