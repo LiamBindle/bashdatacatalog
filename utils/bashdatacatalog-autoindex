@@ -50,8 +50,11 @@ if [ $# -gt 0 ]; then
 
     # Generate ignore-list for temporal assets older than the ignore threshold
     IGNORE_LIST=$(mktemp)
-    cat $FILE_LIST | sed -n -f .temporal_assets.sed | awk -F' +' -v ignore_lt="$IGNORE_THRESHOLD" '{if (ignore_lt >= $1){print $2}}' > $IGNORE_LIST
-
+    if [ -f .assets.md5 ] && [ "$IGNORE_THRESHOLD" = "tracked" ]; then
+        awk -F ' +' '{print $2}' .assets.md5 | sed 's/^\*//g' > $IGNORE_LIST
+    else
+        cat $FILE_LIST | sed -n -f .temporal_assets.sed | awk -F' +' -v ignore_lt="$IGNORE_THRESHOLD" '{if (ignore_lt >= $1){print $2}}' > $IGNORE_LIST
+    fi
     # Carry-over ignored entries from previous .assets.md5
     grep -s -F -f $IGNORE_LIST .assets.md5 > $STAGED_ASSETS
 
@@ -64,9 +67,14 @@ else
     cat $FILE_LIST > $PROCESS_LIST
 fi
 
+printf "Reindexing %i files (out of the %i files) in the collection.\n" $(wc -l < $PROCESS_LIST) $(wc -l < $FILE_LIST)
+
+if [ $(wc -l < $PROCESS_LIST)  -eq 0 ]; then
+    exit 0
+fi
 
 # Generate the "staged" copy of .assets.md5
-cat $PROCESS_LIST | xargs md5sum -b >> $STAGED_ASSETS
+cat $PROCESS_LIST | xargs md5sum -b | tee -a $STAGED_ASSETS
 sort -k2 -o $STAGED_ASSETS $STAGED_ASSETS
 
 # Calculate diff to .assets.md5

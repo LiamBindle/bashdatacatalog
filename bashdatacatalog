@@ -151,7 +151,7 @@ while read COLLECTION_LINE; do
         fi
         ;;
     *)
-        $BDC_SCRIPT
+        $BDC_SCRIPT $@
         ;;
     esac
     cd $WORKING_DIR
