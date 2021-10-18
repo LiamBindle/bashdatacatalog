@@ -62,7 +62,7 @@ case $1 in
 "globus="*","*)
     GLOBUS_SRC=$(echo "$1" | sed 's#globus=\([^,]*\),\(.*\)#\1#g')
     GLOBUS_DST=$(echo "$1" | sed 's#globus=\([^,]*\),\(.*\)#\2#g')
-    FORMAT_SED_EXPR="s#^\./\(.*\)#$GLOBUS_SRC/$BDC_COLLECTION_PREFIX\1  $GLOBUS_DST/$BDC_COLLECTION_PREFIX\1/#g"
+    FORMAT_SED_EXPR="s#^\./\(.*\)#$GLOBUS_SRC/$BDC_COLLECTION_PREFIX\1  $GLOBUS_DST/$BDC_COLLECTION_PREFIX\1#g"
     ;;
 *)
     echo "Invalid format. See usage for list of formats (--help)."
