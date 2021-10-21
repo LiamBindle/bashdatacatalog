@@ -20,7 +20,7 @@ printf " catalog files  %s\n" "$catalogs"
 printf " date range     %s/%s\n" "$from_date" "$to_date"
 
 /opt/bashdatacatalog/bashdatacatalog $(echo $catalogs) fetch && \
-/opt/bashdatacatalog/bashdatacatalog $(echo $catalogs) list-missing url > /tmp/download-list.txt && \
+/opt/bashdatacatalog/bashdatacatalog $(echo $catalogs) list-missing url $from_date $to_date > /tmp/download-list.txt && \
 printf " missing files  %s\n\n" $(wc -l < /tmp/download-list.txt) && \
-printf "Starting downloads.\n"
+printf "Starting downloads.\n" && \
 wget -i /tmp/download-list.txt -x -nH -nv $(echo $wget_options)
