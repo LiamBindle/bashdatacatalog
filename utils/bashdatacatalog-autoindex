@@ -74,7 +74,7 @@ if [ $(wc -l < $PROCESS_LIST)  -eq 0 ]; then
 fi
 
 # Generate the "staged" copy of .assets.md5
-cat $PROCESS_LIST | xargs md5sum -b | tee -a $STAGED_ASSETS
+cat $PROCESS_LIST | xargs md5sum -b | sed 's#\([^ ][^ ]*\)  \(.*\)#\1 *\2#g' | tee -a $STAGED_ASSETS
 sort -k2 -o $STAGED_ASSETS $STAGED_ASSETS
 
 # Calculate diff to .assets.md5
