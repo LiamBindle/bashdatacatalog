@@ -17,7 +17,7 @@ if [ -d .bashdatacatalog ]; then
     cd ..
 else
     echo "Downloading ..."
-    git clone git@github.com:LiamBindle/bashdatacatalog.git .bashdatacatalog
+    git clone https://github.com/LiamBindle/bashdatacatalog.git .bashdatacatalog
 fi
 
 while true; do
