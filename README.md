@@ -1,40 +1,24 @@
 # bashdatacatalog
-bashdatacatalog is a simple data catalogging tool. bashdatacatalog can generate lists of files that are missing or corrupt (on the local file system) relative to a remote copy of the collection. This is useful for generating download lists and transfers lists. bashdatacatalog can generate lists for HTTP downloads, local transfers with `rsync`, and Globus transfers. bashdatacatalog also supports the notion of "temporal assets" for date-stamped data files so lists can be filtered according to a date range.
+The bashdatacatalog is a command-line tool for keeping inventory of data files. You can use the bashdatacatalog to synchronize your local copies of data collections with remote copies. The bashdatacatalog was written to facilitate downloading input data for users of the GEOS-Chem atmospheric chemistry model, which has >1M files and >100TB of available input data.
 
-## Cheat sheet
+With the bashdatacatalog you can run queries like "list all the files that are missing", or "list all the files that are not bitwise identical to the remote data". You can also filter the results according to date ranges, which in words would be something like "list all the files I'm missing, and the time span I'm interested in is 2018-01-03 to 2018-07-21".
 
-Below is a quick overview of the most useful commands (note that `my_catalog1.csv` is a placeholder for your catalog's file name):
+## Key Terminology
 
-| Command | Description |
-|:---|:---|
-| `bashdatacatalog --help` | Shows the usage of `bashdatacatalog` |
-| `bashdatacatalog my_catalog.csv fetch` | Fetch (update) metadata for all collections |
-| `bashdatacatalog my_catalog.csv list-missing` | List all the files that are missing locally |
-| `bashdatacatalog my_catalog.csv list-missing url` | List the **url** of the files that are missing locally |
-| `bashdatacatalog my_catalog.csv list-invalid` | List all the files that are invalid (bad checksum or missing) |
-| `bashdatacatalog my_catalog.csv list-invalid url` | List the **url** of the files that are invalid (bad checksum or missing) |
-| `bashdatacatalog my_catalog.csv list-assets` | List all the files in the catalog |
+The `bashdatacatalog` uses the *collections* and *catalogs* to organize data files. 
 
-All `list-*` commands have three optional arguments: the list format, the starting date for temporal assets, and the ending date for temporal assets. The supported list formats are:
-- `relative` &mdash; relative paths to the files
-- `absolute` &mdash; absolute paths to the files
-- `url` &mdash; URLs for each file
-- `rsync` &mdash; transfer list for use with `rsync --file-from=`
-- `globus=/foo1,/foo2` &mdash; transfer list for use with `globus --batch`
+**collection** - 
+*A data collection is a group of data files. Typically, a collection is a directory with data files in it.*
 
-The start/end date for temporal assets should be ISO 8601 dates. For example
+An example of a data collection is a directory with meteorological data files from the MERRA-2 data product. A second example is a directory with emissions data files from the National Emissions Inventory. In essence, a collection is the unit representing a group of files.
 
-```console
-$ bashdatacatalog my_catalog.csv list-missing url 2018-01-01 2019-01-01  # lists missing files for 2018
-```
 
-All commands can be run on multiple catalogs at the same time. For example
+**catalog** -
+*A data catalog* is a CSV file that defines a list of data collections to use.* 
 
-```console
-$ bashdatacatalog my_catalog1.csv my_catalog2.csv list-assets  # lists all the files in both catalogs
-```
+This includes the path to each collection, the URL to the remote copy of the data collection, and an enable/disable switch for turning collections on or off. An example of a data catalog would be a CSV file that defines the emissions data collections needed for GEOS-Chem version 13.2.1. Note that most `bashdatacatalog` commands operate on data catalogs, and multiple catalogs can be used in one command.
 
-## How to install
+## Installation
 
 Run this command to launch the installer:
 ```console
@@ -61,13 +45,21 @@ Installation complete.
 
 Ater restarting your terminal you should be able to run `bashdatacatalog` commands.
 
-## How to update
+## Updating
 
 You can automatically update, at any time, by running the `self-update` command:
 
 ```console
 bashdatacatalog self-update
 ```
+
+## Instructions
+
+The Wiki includes targetted instructions for using the bashdatacatalog. See
+
+- [Instructions for GEOS-Chem Users](https://github.com/LiamBindle/bashdatacatalog/wiki/Instructions-for-GEOS-Chem-Users) - instructions for downloading GEOS-Chem input data with the bashdatacatalog
+- [Instructions for Data Providers](https://github.com/LiamBindle/bashdatacatalog/wiki/Instructions-for-Data-Providers) - instructions for maintaining data collections for the bashdatacatalog
+
 
 
 ## Demo
@@ -141,6 +133,39 @@ $ wget -nH -x --cut-dirs=4 --input-file=download_list.txt            # Download 
 
 You can rerun the `list-missing` command to check that all the files are downloaded:
 ```console
-$ bashdatacatalog catalog1.csv list-missing
+$ bashdatacatalog catalog1.csv list-missing  # Shows nothing because all the files are downloaded
 $
+```
+
+## Cheat sheet
+
+Here is a quick overview of the most useful commands (note that `my_catalog1.csv` is a placeholder for your catalog's file name):
+
+| Command | Description |
+|:---|:---|
+| `bashdatacatalog --help` | Shows the usage of `bashdatacatalog` |
+| `bashdatacatalog my_catalog.csv fetch` | Update collection metadata |
+| `bashdatacatalog my_catalog.csv list-missing` | Lists missing files |
+| `bashdatacatalog my_catalog.csv list-missing url` | URL list of missing files |
+| `bashdatacatalog my_catalog.csv list-invalid` | Lists files with bad checksums |
+| `bashdatacatalog my_catalog.csv list-invalid url` | URL list of files with bad checksums |
+| `bashdatacatalog my_catalog.csv list-assets` | List all the files |
+
+All `list-*` commands have three optional arguments: the list format, the starting date for temporal assets, and the ending date for temporal assets. The supported list formats are:
+- `relative` &mdash; relative paths to the files
+- `absolute` &mdash; absolute paths to the files
+- `url` &mdash; URLs for each file
+- `rsync` &mdash; transfer list for use with `rsync --file-from=`
+- `globus=/foo1,/foo2` &mdash; transfer list for use with `globus --batch`
+
+The start/end date for temporal assets should be ISO 8601 dates. For example
+
+```console
+$ bashdatacatalog my_catalog.csv list-missing url 2018-01-01 2019-01-01  # lists missing files for 2018
+```
+
+All commands can be run on multiple catalogs at the same time. For example
+
+```console
+$ bashdatacatalog my_catalog1.csv my_catalog2.csv list-assets  # lists all the files in both catalogs
 ```
