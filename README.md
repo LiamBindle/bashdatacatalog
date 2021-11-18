@@ -9,6 +9,7 @@ Alternative data catalogging systems exist, notably [STAC](https://stacspec.org/
 3. Easy to implement in unmanaged data repositories
 4. Easy to maintain operationally (automatically maintanable data collections)
 
+**Note:** Please consider giving the bashdatacatalog a "Star" (:star:) on GitHub. It helps increase visibility. 
 
 ## Key Terminology
 
