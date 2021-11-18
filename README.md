@@ -3,12 +3,6 @@ The bashdatacatalog is a command-line tool that facilitates synchronizing local 
 
 The bashdatacatalog was written to facilitate downloading input data for users of the [GEOS-Chem](https://geos-chem.seas.harvard.edu/) atmospheric chemistry model. The canonical GEOS-Chem input data repository has >1M files and >100TB of data, and the input data required for a simulation depends on the model version and simulation parameters such as start and end date.
 
-Alternative data catalogging systems exist, notably [STAC](https://stacspec.org/) and [Intake](https://intake.readthedocs.io/en/latest/index.html). The bashdatacatalog could be thought of as a stepping stone towards more capable catalogging tools like these. The value proposition of the bashdatacatalog is it's the simplest way to set up a static data catalog. The design goals of the bashdatacatalog were:
-1. No dependencies (other than bash and ubiquitous utilities like curl)
-2. No coding required
-3. Easy to implement in unmanaged data repositories
-4. Easy to maintain operationally (automatically maintanable data collections)
-
 **Note:** Please consider giving the bashdatacatalog a "Star" (:star:) on GitHub. It helps increase visibility. 
 
 ## Key Terminology
@@ -139,3 +133,11 @@ You can rerun the `list-missing` command to check that all the files are downloa
 $ bashdatacatalog catalog1.csv list-missing  # Shows nothing because all the files are downloaded
 $
 ```
+
+## Alternatives
+
+Alternative data catalogging systems exist, notably [STAC](https://stacspec.org/) and [Intake](https://intake.readthedocs.io/en/latest/index.html). The bashdatacatalog could be thought of as a stepping stone towards more capable catalogging tools like these. The value proposition of the bashdatacatalog is it's the simplest way to set up a static data catalog. The design goals of the bashdatacatalog were:
+1. No dependencies (other than bash and ubiquitous utilities like curl)
+2. No coding required
+3. Easy to implement in unmanaged data repositories
+4. Easy to maintain operationally (automatically maintanable data collections)
