@@ -1,7 +1,7 @@
 # bashdatacatalog
-The bashdatacatalog is a command-line tool for keeping inventory of data files. You can use the bashdatacatalog to synchronize your local copies of data collections with remote copies. The bashdatacatalog was written to facilitate downloading input data for users of the GEOS-Chem atmospheric chemistry model, which has >1M files and >100TB of available input data.
+The bashdatacatalog is a command-line tool for keeping inventory of data files. You can use the bashdatacatalog to synchronize a local copy of data collections with remote data collections. The bashdatacatalog was written to facilitate downloading input data for users of the GEOS-Chem atmospheric chemistry model, which has >1M files and >100TB of available input data.
 
-With the bashdatacatalog you can run queries like "list all the files that are missing", or "list all the files that are not bitwise identical to the remote data". You can also filter the results according to date ranges, which in words would be something like "list all the files I'm missing, and the time span I'm interested in is 2018-01-03 to 2018-07-21".
+With the bashdatacatalog you can run queries like "list all the files I'm missing", or "list all my files that are not bitwise identical to the remote data". You can also filter the results according to date ranges, which in words would be something like "list all the files I'm missing, and the time span I'm interested in is 2018-01-03 to 2018-07-21".
 
 ## Key Terminology
 
