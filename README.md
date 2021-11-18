@@ -64,32 +64,31 @@ bashdatacatalog self-update
 
 Detailed instructions for using the bashdatacatalog can be found in the Wiki:
 - [Instructions for GEOS-Chem Users](https://github.com/LiamBindle/bashdatacatalog/wiki/Instructions-for-GEOS-Chem-Users) - instructions for downloading GEOS-Chem input data with the bashdatacatalog
-- [Instructions for Data Providers](https://github.com/LiamBindle/bashdatacatalog/wiki/Instructions-for-Data-Providers) - instructions for maintaining data collections for the bashdatacatalog
+- [Command Cheat Sheet](https://github.com/LiamBindle/bashdatacatalog/wiki/Command-Cheat-Sheet) - cheat sheet with useful commands
+- [Instructions for Data Providers](https://github.com/LiamBindle/bashdatacatalog/wiki/Instructions-for-Data-Providers) - instructions for maintaining data collections
 
 ## Usage Demo
 
-The following is an example of using `bashdatacatalog` to download some data collections. A "collection" is a group of files (data). A "catalog" is a CSV file that specifies collections for an application.
-
-In this example we will download the collections specified by the [catalog1.csv](https://raw.githubusercontent.com/LiamBindle/bashdatacatalog/main/sandbox/catalog1.csv) catalog file:
+The following is an example of using `bashdatacatalog` to download sample data from the sample catalog file [catalog1.csv](https://raw.githubusercontent.com/LiamBindle/bashdatacatalog/main/sandbox/catalog1.csv). Here is what that catalog file looks like:
 
 |Path to collection|Canonical collection (URL)                                                          |Enabled|Notes|
 |------------------|--------------------------------------------------------------------------------------|-------|-----|
 |collection1/      |https://raw.githubusercontent.com/LiamBindle/bashdatacatalog/main/sandbox/collection1/|1      |     |
 |collection2/      |https://raw.githubusercontent.com/LiamBindle/bashdatacatalog/main/sandbox/collection2/|1      |     |
 
-A catalog is a table with the path, provider URL, enable/disable switch, and notes for every collection in the catalog. You can see this catalog has two collections.
+A catalog is a table where each row specifies a data collection. A row consists of: the relative path to the data collection, the URL of the remote data collection, a enable/disable switch, and a place to include notes about the collection. Take note that `catalog1.csv` has two collections.
 
-To begin, download the catalog file:
+Download the catalog file. This is the catalog file that you will run queries on.
 ```console
 $ wget https://raw.githubusercontent.com/LiamBindle/bashdatacatalog/main/sandbox/catalog1.csv
 ```
 
-Before you can run `bashdatacatalog` commands, you need to fetch the metadata for the collections: 
+Before you can run queries on the catalog, you need to fetch the metadata for every collection in `catalog1.csv`:
 ```console
 $ bashdatacatalog catalog1.csv fetch
 ```
 
-Now you can run `bashdatacatalog` commands. For example, list all the files that are missing on the local file system:
+Now that you have fetched the metadata, you can run queries on `catalog1.csv`. For example, here is a query that lists all the files that are currently missing locally:
 ```console
 $ bashdatacatalog catalog1.csv list-missing
 ./collection1/file1
@@ -109,7 +108,7 @@ $ bashdatacatalog catalog1.csv list-missing
 ./collection2/file3
 ```
 
-The following command gives you a URL list for all the missing files: 
+The following query gives you a URL list for the missing files: 
 ```console
 $ bashdatacatalog catalog1.csv list-missing url
 https://raw.githubusercontent.com/LiamBindle/bashdatacatalog/main/sandbox/collection1/file1
@@ -129,7 +128,7 @@ https://raw.githubusercontent.com/LiamBindle/bashdatacatalog/main/sandbox/collec
 https://raw.githubusercontent.com/LiamBindle/bashdatacatalog/main/sandbox/collection2/file3
 ```
 
-A URL list like this is compatible with the `--input-file` argument in wget. For example,
+URL lists are compatible with the `--input-file` argument in wget. For example,
 ```console
 $ bashdatacatalog catalog1.csv list-missing url > download_list.txt  # Generate URL list
 $ wget -nH -x --cut-dirs=4 --input-file=download_list.txt            # Download all the files
@@ -139,37 +138,4 @@ You can rerun the `list-missing` command to check that all the files are downloa
 ```console
 $ bashdatacatalog catalog1.csv list-missing  # Shows nothing because all the files are downloaded
 $
-```
-
-## Cheat sheet
-
-Here is a quick overview of the most useful commands (note that `my_catalog1.csv` is a placeholder for your catalog's file name):
-
-| Command | Description |
-|:---|:---|
-| `bashdatacatalog --help` | Shows the usage of `bashdatacatalog` |
-| `bashdatacatalog my_catalog.csv fetch` | Update collection metadata |
-| `bashdatacatalog my_catalog.csv list-missing` | Lists missing files |
-| `bashdatacatalog my_catalog.csv list-missing url` | URL list of missing files |
-| `bashdatacatalog my_catalog.csv list-invalid` | Lists files with bad checksums |
-| `bashdatacatalog my_catalog.csv list-invalid url` | URL list of files with bad checksums |
-| `bashdatacatalog my_catalog.csv list-assets` | List all the files |
-
-All `list-*` commands have three optional arguments: the list format, the starting date for temporal assets, and the ending date for temporal assets. The supported list formats are:
-- `relative` &mdash; relative paths to the files
-- `absolute` &mdash; absolute paths to the files
-- `url` &mdash; URLs for each file
-- `rsync` &mdash; transfer list for use with `rsync --file-from=`
-- `globus=/foo1,/foo2` &mdash; transfer list for use with `globus --batch`
-
-The start/end date for temporal assets should be ISO 8601 dates. For example
-
-```console
-$ bashdatacatalog my_catalog.csv list-missing url 2018-01-01 2019-01-01  # lists missing files for 2018
-```
-
-All commands can be run on multiple catalogs at the same time. For example
-
-```console
-$ bashdatacatalog my_catalog1.csv my_catalog2.csv list-assets  # lists all the files in both catalogs
 ```
