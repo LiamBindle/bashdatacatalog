@@ -19,7 +19,7 @@ A *data catalog* is a CSV file that defines a list of data collections to use.
 
 A catalog file includes the path to each collection, the URL of the remote data collection, and an enable/disable switch for each collection. An example of a data catalog would be a CSV file that defines the emissions data collections needed for GEOS-Chem version 13.2. Note that most `bashdatacatalog` commands operate on data catalogs, and multiple catalogs can be used in one command.
 
-## Usage Instructions
+## Instructions
 
 Detailed instructions for using the bashdatacatalog can be found in the Wiki:
 - [Instructions for GEOS-Chem Users](https://github.com/LiamBindle/bashdatacatalog/wiki/Instructions-for-GEOS-Chem-Users) - instructions for downloading GEOS-Chem input data with the bashdatacatalog
@@ -28,30 +28,12 @@ Detailed instructions for using the bashdatacatalog can be found in the Wiki:
 
 ## Installation
 
-The following command launches the bashdatacatalog installer:
+The following command launches the bashdatacatalog installer. Follow the prompts. The defaults are usually okay (hit enter).
 ```console
 bash <(curl -s https://raw.githubusercontent.com/LiamBindle/bashdatacatalog/main/utils/install.sh)
 ```
 
-Follow the prompts. The defaults should be okay (hit enter):
-
-```
-> Enter install prefix [/home/liambindle]: 
-Downloading ...
-Cloning into '.bashdatacatalog'...
-remote: Enumerating objects: 77, done.
-remote: Counting objects: 100% (77/77), done.
-remote: Compressing objects: 100% (52/52), done.
-remote: Total 77 (delta 23), reused 70 (delta 16), pack-reused 0
-Receiving objects: 100% (77/77), 10.37 KiB | 5.19 MiB/s, done.
-Resolving deltas: 100% (23/23), done.
-> Do you want to add this installation to your $PATH? [Y/n]: 
-> Enter your environment file [/home/liambindle/.bashrc]: 
-USER ACTION: You should manually add '/home/liambindle/.bashdatacatalog' to $PATH in your environment set up.
-Installation complete.
-```
-
-Ater restarting your terminal you should be able to run `bashdatacatalog` commands.
+Ater restarting your terminal, you should be able to run `bashdatacatalog`.
 
 ### Updating
 
@@ -61,7 +43,7 @@ To update the bashdatacatalog run the following command.
 bashdatacatalog self-update
 ```
 
-## Usage Demo
+## Demo
 
 The following is an example of using `bashdatacatalog` to download sample data from the sample catalog file [catalog1.csv](https://raw.githubusercontent.com/LiamBindle/bashdatacatalog/main/sandbox/catalog1.csv). Here is what that catalog file looks like:
 
