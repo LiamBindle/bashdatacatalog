@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+set -u
+set -e
+
+header=$1
+total=$2
+
+count=0
+
+total_width=$(printf "${total}" | wc -c)
+terminal_width=$(tput cols)
+padding_width=2
+header_width=$(printf "$header" | wc -c)
+pbar_width=$(($terminal_width - $header_width - 11 - $total_width - $total_width))
+
+function print_pbar() {
+    pbar_num_ticks=$((${pbar_width} * ${count} / ${total}))
+    if [ "$count" -eq 0 ]; then
+        pbar_ticks=""
+    else
+        pbar_ticks=$(printf '=%.0s' $(seq $pbar_num_ticks))
+    fi
+    printf "%s (%${total_width}i/%${total_width}i):  [%-${pbar_width}s]  \r" "$header" "$count" "$total" "$pbar_ticks" 1>&2
+}
+
+print_pbar
+while read line; do
+    printf "%-${terminal_width}s\n" "$line"
+    count=$(($count + 1))
+    print_pbar
+done < /dev/stdin
+

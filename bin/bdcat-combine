@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+set -e
+set -u
+
+combined_catalog=$(mktemp)
+temp_file=$(mktemp)
+
+while [ $# -gt 0 ]; do
+    if [ -d ${1} ]; then
+        echo "${1},file://${PWD}/${1},1," >> ${combined_catalog}
+    elif [ -f ${1} ]; then
+        tail -n +2 ${1} >> ${combined_catalog}
+    fi
+
+    # Drop disabled and duplicate collections
+    awk -F',' '{ if($3 != 0){print $0} }' ${combined_catalog} | sort | uniq > ${temp_file}
+    cp ${temp_file} ${combined_catalog}
+
+    shift
+done
+
+cat ${combined_catalog}
+
+rm ${combined_catalog} ${temp_file}
