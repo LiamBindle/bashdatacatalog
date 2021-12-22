@@ -1,37 +1,197 @@
 #!/usr/bin/env bash
+set -u
+
+function generate_scoped_list() {
+    working_list=$1
+    all_assets=$(mktemp)
+    temporal_assets=$(mktemp)
+    static_assets=$(mktemp)
+    temp_file=$(mktemp)
+
+    [ -f .assets.md5 ] && awk -F ' +' '{print $2}' .assets.md5 | sed 's/^\*//g' > ${all_assets}
+    [ -f .temporal_assets.sed ] && sed -n -f .temporal_assets.sed ${all_assets} | awk -F ' +' '{print $2}' > ${temporal_assets}
+    comm -23 ${all_assets} ${temporal_assets} > ${static_assets}
+
+    # Stage 1: Generate work list
+    if [ "${BDC_LIST_STATIC}" = true ]; then
+        cat ${static_assets} >> ${working_list}
+    fi
+
+    if [ "${BDC_LIST_TEMPORAL}" = true ]; then
+        cat ${temporal_assets} >> ${working_list}
+    fi
+
+    if [ "${BDC_LIST_NEW}" = true ]; then
+        find -L . -name .asset_patches -prune -o -type f \( ! -name '\.*' \) -print | sort > ${temp_file}
+        comm -23 ${temp_file} ${all_assets} >> ${working_list}
+    fi
+
+    # Sort working_list
+    sort -o ${working_list} ${working_list}
+
+    rm ${all_assets} ${temporal_assets} ${static_assets} ${temp_file}
+}
+
+function trim_scoped_list() {
+    working_list=$1
+    temp_file=$(mktemp)
+    trim_list=$(mktemp)
+    
+    if [ -f .ignore.grep ]; then
+        grep -v -f .ignore.grep ${working_list} > ${temp_file}
+        cp ${temp_file} ${working_list}
+    fi
+
+    grep "${BDC_LIST_PATTERN}" ${working_list} > ${temp_file}
+    cp ${temp_file} ${working_list}
+
+    if [ -f .temporal_assets.sed ]; then
+
+        AWK_CMP_LT='''
+        { if(length($1) > length(threshold)) { cmplen=length(threshold) } else { cmplen=length($1) }; if(substr($1,0,cmplen) < substr(threshold,0,cmplen)) print $2 }
+        '''
+        AWK_CMP_GT='''
+        { if(length($1) > length(threshold)) { cmplen=length(threshold) } else { cmplen=length($1) }; if(substr($1,0,cmplen) > substr(threshold,0,cmplen)) print $2 }
+        '''
+
+        RANGE_START=$(echo ${BDC_LIST_RANGE} | cut -d, -f1)
+        RANGE_END=$(echo ${BDC_LIST_RANGE} | cut -d, -f2)
+        
+        sed -n -f .temporal_assets.sed ${working_list} > ${temp_file}
+        if [ ! -z "${RANGE_START}" ]; then
+            awk -F ' +' -v threshold=${RANGE_START} "$AWK_CMP_LT" ${temp_file} >> ${trim_list}
+        fi
+        if [ ! -z "${RANGE_END}" ]; then
+            awk -F ' +' -v threshold=${RANGE_END} "$AWK_CMP_GT" ${temp_file} >> ${trim_list}
+        fi
+        
+        grep -v -F -f ${trim_list} ${working_list} > ${temp_file}
+        cp ${temp_file} ${working_list}
+    fi
+
+    rm ${temp_file} ${trim_list}
+}
+
+function modify_list() {
+    working_list=$1
+    file_list=$(mktemp)
+    temp_file=$(mktemp)
+
+    [ ! -z "${BDC_LIST_WHAT}" ] && find -L . -name .asset_patches -prune -o -type f \( ! -name '\.*' \) -print | sort > ${file_list}
+
+    case "${BDC_LIST_WHAT}" in
+        missing)
+            comm -23 ${working_list} ${file_list} > ${temp_file}
+            cp ${temp_file} ${working_list}
+            ;;
+        wrong)
+            printf "" > ${temp_file}
+            while read FILE_PATH; do
+                grep -F "${FILE_PATH}" .assets.md5 | md5sum -c --status || echo "${FILE_PATH}" >> ${temp_file}
+            done < ${working_list}
+            cp ${temp_file} ${working_list}
+            ;;
+        unnecessary)
+            comm -13 ${working_list} ${file_list} > ${temp_file}
+            cp ${temp_file} ${working_list}
+            ;;
+    esac
+
+    rm ${temp_file} ${file_list}
+}
+
+function format_list() {
+    working_list=$1
+    temp_file=$(mktemp)
+    new_col=$(mktemp)
+    output_list=$(mktemp) 
+
+    for format in ${BDC_LIST_FORMAT//,/ }; do
+        case "${format}" in
+            "rel")
+                sed "s#^\./#./$BDC_COLLECTION_PREFIX#g" ${working_list} > ${new_col}
+                ;;
+            "abs")
+                sed "s#^\./#$PWD/#g" ${working_list} > ${new_col}
+                ;;
+            "url")
+                sed "s#^\./#$BDC_COLLECTION_URL#g" ${working_list} > ${new_col}
+                ;;
+            "rsync")
+                sed "s#^\./#./$BDC_COLLECTION_PREFIX#g" ${working_list} > ${new_col}
+                ;;
+            "globus="*":"*)
+                GLOBUS_SRC=$(echo "${format}" | sed 's#globus=\([^:]*\):\(.*\)#\1#g')
+                GLOBUS_DST=$(echo "${format}" | sed 's#globus=\([^:]*\):\(.*\)#\2#g')
+                sed "s#^\./\(.*\)#$GLOBUS_SRC/$BDC_COLLECTION_PREFIX\1  $GLOBUS_DST/$BDC_COLLECTION_PREFIX\1#g" ${working_list} > ${new_col}
+                ;;
+        esac
+        if [ "$(cat ${output_list} | wc -l)" -gt "0" ]; then
+            paste -d',' ${output_list} ${new_col} > ${temp_file}
+            cp ${temp_file} ${output_list}
+        else
+            cp ${new_col} ${output_list}
+        fi
+    done
+    cp ${output_list} ${working_list}
+    
+    rm ${temp_file} ${new_col} ${output_list}
+}
+
+function list_collection() {
+    BDC_LIST_STATIC=${BDC_LIST_STATIC:=false}
+    BDC_LIST_TEMPORAL=${BDC_LIST_TEMPORAL:=false}
+    BDC_LIST_NEW=${BDC_LIST_NEW:=false}
+    BDC_LIST_WHAT=${BDC_LIST_WHAT:=""}
+    BDC_LIST_PATTERN=${BDC_LIST_PATTERN:=".*"}
+    BDC_LIST_RANGE=${BDC_LIST_RANGE:=","}
+    BDC_LIST_FORMAT=${BDC_LIST_FORMAT:="rel"}
+    BDC_COLLECTION_PREFIX=${BDC_COLLECTION_PREFIX:=""}
+    
+    working_list=$(mktemp)
+
+    generate_scoped_list ${working_list}
+    trim_scoped_list ${working_list}
+    modify_list ${working_list}
+    format_list ${working_list}
+
+    cat ${working_list}
+
+    rm ${working_list}
+}
 
 while getopts "anstr:p:mwuf:c:" FLAG; do
     case "${FLAG}" in
         a)
-            export BDC_LIST_STATIC=true
-            export BDC_LIST_TEMPORAL=true
+            BDC_LIST_STATIC=true
+            BDC_LIST_TEMPORAL=true
             ;;
         n)
-            export BDC_LIST_NEW=true
+            BDC_LIST_NEW=true
             ;;
         s)
-            export BDC_LIST_STATIC=true
+            BDC_LIST_STATIC=true
             ;;
         t)
-            export BDC_LIST_TEMPORAL=true
+            BDC_LIST_TEMPORAL=true
             ;;
         r)
-            export BDC_LIST_RANGE=${OPTARG}
+            BDC_LIST_RANGE=${OPTARG}
             ;;
         p)
-            export BDC_LIST_PATTERN=${OPTARG}
+            BDC_LIST_PATTERN=${OPTARG}
             ;;
         m)
-            export BDC_LIST_KEEP="missing"
+            BDC_LIST_WHAT="missing"
             ;;
         w)
-            export BDC_LIST_KEEP="wrong"
+            BDC_LIST_WHAT="wrong"
             ;;
         u)
-            export BDC_LIST_KEEP="unnecessary"
+            BDC_LIST_WHAT="unnecessary"
             ;;
         f)
-            export BDC_LIST_FORMAT=${OPTARG}
+            BDC_LIST_FORMAT=${OPTARG}
             ;;
     esac 
 done
@@ -47,13 +207,13 @@ else
 fi
 
 while read COLLECTION_LINE; do
-    export BDC_COLLECTION_PREFIX=$(echo "$COLLECTION_LINE" | awk -F',' '{print $1}' | sed 's#/*$#/#g')
-    export BDC_COLLECTION_URL=$(echo "$COLLECTION_LINE" | awk -F',' '{print $2}' | sed 's#/*$#/#g')
+    BDC_COLLECTION_PREFIX=$(echo "$COLLECTION_LINE" | awk -F',' '{print $1}' | sed 's#/*$#/#g')
+    BDC_COLLECTION_URL=$(echo "$COLLECTION_LINE" | awk -F',' '{print $2}' | sed 's#/*$#/#g')
     mkdir -p $BDC_COLLECTION_PREFIX
 
     (
         cd $BDC_COLLECTION_PREFIX
-        bdcat-ls
+        list_collection
     )
 done < ${combined_catalog}
 
