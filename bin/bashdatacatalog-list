@@ -87,7 +87,7 @@ function modify_list() {
         wrong)
             printf "" > ${temp_file}
             while read FILE_PATH; do
-                grep -F "${FILE_PATH}" .assets.md5 | md5sum -c --status || echo "${FILE_PATH}" >> ${temp_file}
+                grep -F "${FILE_PATH}" .assets.md5 | md5sum -c --status --ignore-missing || echo "${FILE_PATH}" >> ${temp_file}
             done < ${working_list}
             cp ${temp_file} ${working_list}
             ;;
