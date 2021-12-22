@@ -97,6 +97,10 @@ function modify_list() {
             ;;
     esac
 
+    # Sort and remove duplicates
+    sort ${working_list} | uniq -u > ${temp_file}
+    cp ${temp_file} ${working_list}
+
     rm ${temp_file} ${file_list}
 }
 
