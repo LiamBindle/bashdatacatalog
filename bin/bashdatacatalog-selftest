@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+set -u
+set -e
+
+function run_test() {
+    tests_output=$(mktemp)
+    cd ${TEST_DIRECTORY}
+    if diff --ignore-trailing-space <(printf "${TEST_EXPECTED_OUTPUT}") <(bash -c "${TEST_COMMANDS}"); then
+        printf "PASSED"
+    else
+        printf "FAILED"
+    fi
+    rm ${tests_output}
+}
+
+tests_directory=$(dirname $(which bashdatacatalog-list))/../tests
+
+tests_list=$(mktemp)
+find ${tests_directory} -type f | sort > ${tests_list}
+
+num_tests=$(cat ${tests_list} | wc -l)
+num_tests_width=$(printf "%i" "${num_tests}" | wc -c)
+test_id=0
+while read test_path; do
+    test_id=$((${test_id} + 1))
+    source ${test_path}
+    status=$(run_test)
+    printf "[Test %${num_tests_width}i/%i]  %s    (%s)\n" "${test_id}" "${num_tests}" "${status}" "${TEST_NAME}"
+
+done < ${tests_list}
+
+rm ${tests_list}

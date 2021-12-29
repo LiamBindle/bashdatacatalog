@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 set -u
+if [ ! -z ${DEBUG+x} ]; then
+    set -x
+fi
 
 function generate_scoped_list() {
     working_list=$1
@@ -106,40 +109,37 @@ function modify_list() {
 
 function format_list() {
     working_list=$1
-    temp_file=$(mktemp)
-    new_col=$(mktemp)
     output_list=$(mktemp) 
 
-    for format in ${BDC_LIST_FORMAT//,/ }; do
-        case "${format}" in
-            "rel")
-                sed "s#^\./#./$BDC_COLLECTION_PREFIX#g" ${working_list} > ${new_col}
-                ;;
-            "abs")
-                sed "s#^\./#$PWD/#g" ${working_list} > ${new_col}
-                ;;
-            "url")
-                sed "s#^\./#$BDC_COLLECTION_URL#g" ${working_list} > ${new_col}
-                ;;
-            "rsync")
-                sed "s#^\./#./$BDC_COLLECTION_PREFIX#g" ${working_list} > ${new_col}
-                ;;
-            "globus="*":"*)
-                GLOBUS_SRC=$(echo "${format}" | sed 's#globus=\([^:]*\):\(.*\)#\1#g')
-                GLOBUS_DST=$(echo "${format}" | sed 's#globus=\([^:]*\):\(.*\)#\2#g')
-                sed "s#^\./\(.*\)#$GLOBUS_SRC/$BDC_COLLECTION_PREFIX\1  $GLOBUS_DST/$BDC_COLLECTION_PREFIX\1#g" ${working_list} > ${new_col}
-                ;;
-        esac
-        if [ "$(cat ${output_list} | wc -l)" -gt "0" ]; then
-            paste -d',' ${output_list} ${new_col} > ${temp_file}
-            cp ${temp_file} ${output_list}
-        else
-            cp ${new_col} ${output_list}
-        fi
-    done
+    case "${BDC_LIST_FORMAT}" in
+        "rel")
+            sed "s#^\./#./$BDC_COLLECTION_PREFIX#g" ${working_list} > ${output_list}
+            ;;
+        "abs")
+            sed "s#^\./#$PWD/#g" ${working_list} > ${output_list}
+            ;;
+        "url")
+            sed "s#^\./#$BDC_COLLECTION_URL#g" ${working_list} > ${output_list}
+            ;;
+        "rsync")
+            sed "s#^\./#./$BDC_COLLECTION_PREFIX#g" ${working_list} > ${output_list}
+            ;;
+        "xargs-rm")
+            sed "s#^\./#./$BDC_COLLECTION_PREFIX#g" ${working_list} > ${output_list}
+            ;;
+        "xargs-curl")
+            sed "s#^\./\(.*\)#$BDC_CURL_OPTIONS --url $BDC_COLLECTION_URL\1 -o ./$BDC_COLLECTION_PREFIX\1#g" ${working_list} > ${output_list}
+            ;;
+        "globus="*":"*)
+            GLOBUS_SRC=$(echo "${format}" | sed 's#globus=\([^:]*\):\(.*\)#\1#g')
+            GLOBUS_DST=$(echo "${format}" | sed 's#globus=\([^:]*\):\(.*\)#\2#g')
+            sed "s#^\./\(.*\)#$GLOBUS_SRC/$BDC_COLLECTION_PREFIX\1  $GLOBUS_DST/$BDC_COLLECTION_PREFIX\1#g" ${working_list} > ${output_list}
+            ;;
+    esac
+    
     cp ${output_list} ${working_list}
     
-    rm ${temp_file} ${new_col} ${output_list}
+    rm ${output_list}
 }
 
 function list_collection() {
@@ -151,6 +151,7 @@ function list_collection() {
     BDC_LIST_RANGE=${BDC_LIST_RANGE:=","}
     BDC_LIST_FORMAT=${BDC_LIST_FORMAT:="rel"}
     BDC_COLLECTION_PREFIX=${BDC_COLLECTION_PREFIX:=""}
+    BDC_CURL_OPTIONS=${BDC_CURL_OPTIONS:="--fail --silent --insecure --netrc-optional --location --globoff --create-dirs"}
     
     working_list=$(mktemp)
 
@@ -204,7 +205,7 @@ shift $(($OPTIND-1))
 # Parse catalogs
 combined_catalog=$(mktemp)
 if [ $# -eq 0 ]; then
-    # cwd is the collection
+    # implicit behaviour: cwd is treated as the only collection
     bdcat-combine ./ > ${combined_catalog}
 else
     bdcat-combine $@ > ${combined_catalog}

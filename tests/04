@@ -1,0 +1,15 @@
+TEST_NAME="list temporal after"
+
+TEST_DIRECTORY=$(dirname $(which bashdatacatalog-list))/../sandbox
+
+TEST_COMMANDS=$(cat << END_OF_TEST
+bashdatacatalog-list -t -r 2019 collection2 
+END_OF_TEST
+)
+
+TEST_EXPECTED_OUTPUT=$(cat << END_OF_EXPECTED_OUTPUT
+./collection2/2019/file-20190203
+./collection2/2019/file-20190403
+./collection2/2019/file-20190803
+END_OF_EXPECTED_OUTPUT
+)

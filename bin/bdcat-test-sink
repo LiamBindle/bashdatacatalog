@@ -1,6 +1,0 @@
-#!/usr/bin/env bash
-
-while read FILE_PATH; do
-    sleep 1
-    echo $FILE_PATH
-done < ${1}

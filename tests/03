@@ -1,0 +1,18 @@
+TEST_NAME="list all, collection"
+
+TEST_DIRECTORY=$(dirname $(which bashdatacatalog-list))/../sandbox
+
+TEST_COMMANDS=$(cat << END_OF_TEST
+bashdatacatalog-list -a collection1 
+END_OF_TEST
+)
+
+TEST_EXPECTED_OUTPUT=$(cat << END_OF_EXPECTED_OUTPUT
+./collection1/file1
+./collection1/file2
+./collection1/file3
+./collection1/sub1/subfile1
+./collection1/sub1/subfile2
+./collection1/sub1/subfile3
+END_OF_EXPECTED_OUTPUT
+)

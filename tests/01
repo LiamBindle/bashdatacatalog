@@ -1,0 +1,15 @@
+TEST_NAME="list static files, collection"
+
+TEST_DIRECTORY=$(dirname $(which bashdatacatalog-list))/../sandbox
+
+TEST_COMMANDS=$(cat << END_OF_TEST
+bashdatacatalog-list -s collection2 
+END_OF_TEST
+)
+
+TEST_EXPECTED_OUTPUT=$(cat << END_OF_EXPECTED_OUTPUT
+./collection2/file1
+./collection2/file2
+./collection2/file3
+END_OF_EXPECTED_OUTPUT
+)
