@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+set -u
+if [ ! -z ${DEBUG+x} ]; then
+    set -x
+fi
+
+function download_file() {
+    URL=$1
+    FILE_PATH=$2
+    OK_CODES=$3
+    HTTP_CODE=$(curl -f --write-out "%{http_code}" --silent -k -n -L -g --url $URL -o $FILE_PATH --create-dirs)
+    if echo "$HTTP_CODE" | grep -q "$OK_CODES" ; then
+        return 0
+    else
+        return 1
+    fi
+}
+
+combined_catalog=$(mktemp)
+bdcat-combine $@ > ${combined_catalog}
+
+while read COLLECTION_LINE; do
+    BDC_COLLECTION_PREFIX=$(echo "$COLLECTION_LINE" | awk -F',' '{print $1}' | sed 's#/*$#/#g')
+    BDC_COLLECTION_URL=$(echo "$COLLECTION_LINE" | awk -F',' '{print $2}' | sed 's#/*$#/#g')
+
+    echo "Fetching metadata for '${BDC_COLLECTION_PREFIX}' from '${BDC_COLLECTION_URL}'"
+
+    mkdir -p $BDC_COLLECTION_PREFIX
+    download_file ${BDC_COLLECTION_URL}/.assets.md5 ${BDC_COLLECTION_PREFIX}/.assets.md5 "000\|2[0-9][0-9]" || ( echo "Failed to download '.assets.md5' from $1"; exit 1 )
+    download_file ${BDC_COLLECTION_URL}/.temporal_assets.sed ${BDC_COLLECTION_PREFIX}/.temporal_assets.sed "000\|2[0-9][0-9]\|404"
+    download_file ${BDC_COLLECTION_URL}/.ignore.grep ${BDC_COLLECTION_PREFIX}/.ignore.grep "000\|2[0-9][0-9]\|404"
+
+done < ${combined_catalog}
+
+rm ${combined_catalog}
