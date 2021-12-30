@@ -28,7 +28,7 @@ while read test_path; do
     test_id=$((${test_id} + 1))
     source ${test_path}
     status=$(run_test)
-    printf "[Test %${num_tests_width}i/%i]  %s    (%s)\n" "${test_id}" "${num_tests}" "${status}" "${TEST_NAME}"
+    printf "[Test %${num_tests_width}i/%i]   %s   (%s)\n" "${test_id}" "${num_tests}" "${status}" "${TEST_NAME}"
 
 done < ${tests_list}
 

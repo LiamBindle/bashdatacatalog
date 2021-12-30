@@ -193,6 +193,9 @@ while getopts "anstr:p:mwuf:c:" FLAG; do
             BDC_LIST_WHAT="wrong"
             ;;
         u)
+            BDC_LIST_NEW=true
+            BDC_LIST_STATIC=true
+            BDC_LIST_TEMPORAL=true
             BDC_LIST_WHAT="unnecessary"
             ;;
         f)
