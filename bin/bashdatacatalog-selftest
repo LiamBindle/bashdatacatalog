@@ -5,15 +5,11 @@ if [ ! -z ${DEBUG+x} ]; then
     set -x
 fi
 
+tests_passed=0
+
 function run_test() {
-    tests_output=$(mktemp)
     cd ${TEST_DIRECTORY}
-    if diff --ignore-trailing-space <(printf -- "${TEST_EXPECTED_OUTPUT}") <(bash -c "${TEST_COMMANDS}"); then
-        printf "PASSED"
-    else
-        printf "FAILED"
-    fi
-    rm ${tests_output}
+    diff --ignore-trailing-space <(printf -- "${TEST_EXPECTED_OUTPUT}") <(bash -c "${TEST_COMMANDS}")
 }
 
 tests_directory=$(dirname $(which bashdatacatalog-list))/../tests
@@ -27,9 +23,21 @@ test_id=0
 while read test_path; do
     test_id=$((${test_id} + 1))
     source ${test_path}
-    status=$(run_test)
-    printf "[Test %${num_tests_width}i/%i]   %s   (%s)\n" "${test_id}" "${num_tests}" "${status}" "${TEST_NAME}"
+    if run_test; then
+        status="Passed"
+        tests_passed=$((${tests_passed} + 1))
+    else
+        status="FAILED"
+    fi
+    printf "[Test %${num_tests_width}i/%i]  %s   (%s)\n" "${test_id}" "${num_tests}" "${status}" "${TEST_NAME}"
 
 done < ${tests_list}
 
 rm ${tests_list}
+
+printf "\nFinished testing: %i/%i tests passed.\n" "${tests_passed}" "${num_tests}"
+if [ "${tests_passed}" = "${num_tests}" ]; then
+    exit 0
+else
+    exit 1
+fi
