@@ -151,7 +151,9 @@ function list_collection() {
     BDC_LIST_RANGE=${BDC_LIST_RANGE:=","}
     BDC_LIST_FORMAT=${BDC_LIST_FORMAT:="rel"}
     BDC_COLLECTION_PREFIX=${BDC_COLLECTION_PREFIX:=""}
-    BDC_CURL_OPTIONS=${BDC_CURL_OPTIONS:="--fail --silent --insecure --netrc-optional --location --globoff --create-dirs"}
+
+    curl_write_out='(status %{http_code})  %{url} -> %{filename_effective}  [%{size_download} bytes]\\n'
+    BDC_CURL_OPTIONS=${BDC_CURL_OPTIONS:="--write-out '${curl_write_out}' --fail --silent --insecure --netrc-optional --location --globoff --create-dirs"}
     
     working_list=$(mktemp)
 
@@ -227,3 +229,5 @@ done < ${combined_catalog}
 
 
 rm ${combined_catalog}
+
+# bashdatacatalog-list -am -f xargs-curl ../catalog1.csv | xargs curl | pv --line-mode --size 30
