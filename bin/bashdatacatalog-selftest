@@ -1,11 +1,14 @@
 #!/usr/bin/env bash
 set -u
 set -e
+if [ ! -z ${DEBUG+x} ]; then
+    set -x
+fi
 
 function run_test() {
     tests_output=$(mktemp)
     cd ${TEST_DIRECTORY}
-    if diff --ignore-trailing-space <(printf "${TEST_EXPECTED_OUTPUT}") <(bash -c "${TEST_COMMANDS}"); then
+    if diff --ignore-trailing-space <(printf -- "${TEST_EXPECTED_OUTPUT}") <(bash -c "${TEST_COMMANDS}"); then
         printf "PASSED"
     else
         printf "FAILED"

@@ -1,0 +1,21 @@
+TEST_NAME="format xargs-curl"
+
+TEST_DIRECTORY=$(dirname $(which bashdatacatalog-list))/../sandbox
+
+TEST_COMMANDS=$(cat << END_OF_TEST
+bashdatacatalog-list -s -f xargs-curl catalog1.csv 
+END_OF_TEST
+)
+
+TEST_EXPECTED_OUTPUT=$(cat << END_OF_EXPECTED_OUTPUT
+--fail --silent --insecure --netrc-optional --location --globoff --create-dirs --url https://raw.githubusercontent.com/LiamBindle/bashdatacatalog/main/sandbox/collection1/file1 -o ./collection1/file1
+--fail --silent --insecure --netrc-optional --location --globoff --create-dirs --url https://raw.githubusercontent.com/LiamBindle/bashdatacatalog/main/sandbox/collection1/file2 -o ./collection1/file2
+--fail --silent --insecure --netrc-optional --location --globoff --create-dirs --url https://raw.githubusercontent.com/LiamBindle/bashdatacatalog/main/sandbox/collection1/file3 -o ./collection1/file3
+--fail --silent --insecure --netrc-optional --location --globoff --create-dirs --url https://raw.githubusercontent.com/LiamBindle/bashdatacatalog/main/sandbox/collection1/sub1/subfile1 -o ./collection1/sub1/subfile1
+--fail --silent --insecure --netrc-optional --location --globoff --create-dirs --url https://raw.githubusercontent.com/LiamBindle/bashdatacatalog/main/sandbox/collection1/sub1/subfile2 -o ./collection1/sub1/subfile2
+--fail --silent --insecure --netrc-optional --location --globoff --create-dirs --url https://raw.githubusercontent.com/LiamBindle/bashdatacatalog/main/sandbox/collection1/sub1/subfile3 -o ./collection1/sub1/subfile3
+--fail --silent --insecure --netrc-optional --location --globoff --create-dirs --url https://raw.githubusercontent.com/LiamBindle/bashdatacatalog/main/sandbox/collection2/file1 -o ./collection2/file1
+--fail --silent --insecure --netrc-optional --location --globoff --create-dirs --url https://raw.githubusercontent.com/LiamBindle/bashdatacatalog/main/sandbox/collection2/file2 -o ./collection2/file2
+--fail --silent --insecure --netrc-optional --location --globoff --create-dirs --url https://raw.githubusercontent.com/LiamBindle/bashdatacatalog/main/sandbox/collection2/file3 -o ./collection2/file3
+END_OF_EXPECTED_OUTPUT
+)

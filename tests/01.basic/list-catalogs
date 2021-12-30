@@ -1,0 +1,24 @@
+TEST_NAME="list all between, catalogs"
+
+TEST_DIRECTORY=$(dirname $(which bashdatacatalog-list))/../sandbox
+
+TEST_COMMANDS=$(cat << END_OF_TEST
+bashdatacatalog-list -a -r 2019,2019-08-03 catalog1.csv catalog2.csv 
+END_OF_TEST
+)
+
+TEST_EXPECTED_OUTPUT=$(cat << END_OF_EXPECTED_OUTPUT
+./collection1/file1
+./collection1/file2
+./collection1/file3
+./collection1/sub1/subfile1
+./collection1/sub1/subfile2
+./collection1/sub1/subfile3
+./collection2/2019/file-20190203
+./collection2/2019/file-20190403
+./collection2/2019/file-20190803
+./collection2/file1
+./collection2/file2
+./collection2/file3
+END_OF_EXPECTED_OUTPUT
+)

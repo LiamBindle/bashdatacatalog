@@ -1,0 +1,13 @@
+TEST_NAME="format xargs-rm"
+
+TEST_COMMANDS=$(cat << END_OF_TEST
+bashdatacatalog-list -s -f rel collection2 
+END_OF_TEST
+)
+
+TEST_EXPECTED_OUTPUT=$(cat << END_OF_EXPECTED_OUTPUT
+./collection2/file1
+./collection2/file2
+./collection2/file3
+END_OF_EXPECTED_OUTPUT
+)

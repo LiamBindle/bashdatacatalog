@@ -1,0 +1,15 @@
+TEST_NAME="format file urls"
+
+TEST_DIRECTORY=$(dirname $(dirname $(which bashdatacatalog-list)))/sandbox
+
+TEST_COMMANDS=$(cat << END_OF_TEST
+bashdatacatalog-list -s -f url collection2
+END_OF_TEST
+)
+
+TEST_EXPECTED_OUTPUT=$(cat << END_OF_EXPECTED_OUTPUT
+file://${TEST_DIRECTORY}/collection2/file1
+file://${TEST_DIRECTORY}/collection2/file2
+file://${TEST_DIRECTORY}/collection2/file3
+END_OF_EXPECTED_OUTPUT
+)

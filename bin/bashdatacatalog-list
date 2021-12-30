@@ -130,9 +130,9 @@ function format_list() {
         "xargs-curl")
             sed "s#^\./\(.*\)#$BDC_CURL_OPTIONS --url $BDC_COLLECTION_URL\1 -o ./$BDC_COLLECTION_PREFIX\1#g" ${working_list} > ${output_list}
             ;;
-        "globus="*":"*)
-            GLOBUS_SRC=$(echo "${format}" | sed 's#globus=\([^:]*\):\(.*\)#\1#g')
-            GLOBUS_DST=$(echo "${format}" | sed 's#globus=\([^:]*\):\(.*\)#\2#g')
+        "globus="*","*)
+            GLOBUS_SRC=$(echo "${BDC_LIST_FORMAT}" | sed 's#globus=\([^,]*\),\(.*\)#\1#g')
+            GLOBUS_DST=$(echo "${BDC_LIST_FORMAT}" | sed 's#globus=\([^,]*\),\(.*\)#\2#g')
             sed "s#^\./\(.*\)#$GLOBUS_SRC/$BDC_COLLECTION_PREFIX\1  $GLOBUS_DST/$BDC_COLLECTION_PREFIX\1#g" ${working_list} > ${output_list}
             ;;
     esac
