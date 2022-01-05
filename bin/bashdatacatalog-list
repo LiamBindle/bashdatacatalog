@@ -88,6 +88,10 @@ function modify_list() {
             comm -23 ${working_list} ${file_list} > ${temp_file}
             cp ${temp_file} ${working_list}
             ;;
+        existing)
+            comm -12 ${working_list} ${file_list} > ${temp_file}
+            cp ${temp_file} ${working_list}
+            ;;
         wrong)
             printf "" > ${temp_file}
             while read FILE_PATH; do
@@ -171,7 +175,7 @@ function list_collection() {
     rm ${working_list}
 }
 
-while getopts "anstr:p:mwuf:c:" FLAG; do
+while getopts "anstr:p:mwuf:c:e" FLAG; do
     case "${FLAG}" in
         a)
             BDC_LIST_STATIC=true
@@ -194,6 +198,9 @@ while getopts "anstr:p:mwuf:c:" FLAG; do
             ;;
         m)
             BDC_LIST_WHAT="missing"
+            ;;
+        e)
+            BDC_LIST_WHAT="existing"
             ;;
         w)
             BDC_LIST_WHAT="wrong"

@@ -1,0 +1,26 @@
+TEST_NAME="reindex, with updates"
+
+TEST_DIRECTORY=$(dirname $(which bashdatacatalog-list))/../sandbox
+
+TEST_COMMANDS=$(cat << END_OF_TEST
+cp collection3/.assets.md5 collection3.assets.md5.bk
+
+bashdatacatalog-reindex '-ae' collection3 &> /dev/null
+cat collection3/.assets.md5
+
+mv collection3.assets.md5.bk collection3/.assets.md5
+END_OF_TEST
+)
+
+TEST_EXPECTED_OUTPUT=$(cat << END_OF_EXPECTED_OUTPUT
+d096b4ac2213e3b843f4d04fa44ef648 *./2018/file-20181005
+9db5e7c4668f7154965a9b5ce2193677 *./2018/file-20181105
+ca45002335a51f30d1fe98019b8c1915 *./2018/file-20181205
+dbb86905079360d4b2ac2b85f05aed02 *./2019/file-20190203
+9db5e7c4668f7154965a9b5ce2193677 *./2019/file-20190403
+ca45002335a51f30d1fe98019b8c1915 *./2019/file-20190803
+4dd2ab16ee8cbd0465903b7b3080444a *./file1
+e555d324f7aa42e894fc9e2bf484c7dc *./file2
+a5890ace30a3e84d9118196c161aeec2 *./file3
+END_OF_EXPECTED_OUTPUT
+)

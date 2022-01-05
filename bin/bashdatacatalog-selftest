@@ -29,7 +29,7 @@ while read test_path; do
     else
         status="FAILED"
     fi
-    printf "[Test %${num_tests_width}i/%i]  %s   (%s)\n" "${test_id}" "${num_tests}" "${status}" "${TEST_NAME}"
+    printf "[Test %${num_tests_width}i/%i]  %s  (%s)\n" "${test_id}" "${num_tests}" "${status}" "${TEST_NAME}"
 
 done < ${tests_list}
 
