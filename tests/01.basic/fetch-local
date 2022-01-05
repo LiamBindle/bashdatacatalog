@@ -1,0 +1,28 @@
+TEST_NAME="fetch, local"
+
+TEST_DIRECTORY=$(dirname $(which bashdatacatalog-list))/../sandbox/scratch
+
+TEST_COMMANDS=$(cat << END_OF_TEST
+rm -rf ./collection1 ./collection2 catalog.csv
+sed "s#https://raw.githubusercontent.com/LiamBindle/bashdatacatalog/main/sandbox#file://${TEST_DIRECTORY}/..#g" ../catalog1.csv > catalog.csv
+bashdatacatalog-fetch catalog.csv > /dev/null
+bashdatacatalog-list -ar 2019,2020 catalog.csv
+rm -rf ./collection1 ./collection2 catalog.csv
+END_OF_TEST
+)
+
+TEST_EXPECTED_OUTPUT=$(cat << END_OF_EXPECTED_OUTPUT
+./collection1/file1
+./collection1/file2
+./collection1/file3
+./collection1/sub1/subfile1
+./collection1/sub1/subfile2
+./collection1/sub1/subfile3
+./collection2/2019/file-20190203
+./collection2/2019/file-20190403
+./collection2/2019/file-20190803
+./collection2/file1
+./collection2/file2
+./collection2/file3
+END_OF_EXPECTED_OUTPUT
+)

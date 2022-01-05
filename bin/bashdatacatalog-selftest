@@ -9,7 +9,7 @@ tests_passed=0
 
 function run_test() {
     cd ${TEST_DIRECTORY}
-    diff --ignore-trailing-space <(printf -- "${TEST_EXPECTED_OUTPUT}") <(bash -c "${TEST_COMMANDS}")
+    diff --ignore-trailing-space <(printf -- '%s' "${TEST_EXPECTED_OUTPUT}") <(bash -c "${TEST_COMMANDS}")
 }
 
 tests_directory=$(dirname $(which bashdatacatalog-list))/../tests

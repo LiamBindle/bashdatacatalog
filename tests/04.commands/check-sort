@@ -1,0 +1,16 @@
+TEST_NAME="check 'sort'"
+
+TEST_DIRECTORY=$(dirname $(which bashdatacatalog-list))/../sandbox
+
+TEST_COMMANDS=$(cat << END_OF_TEST
+sort --unique --key=2 --field-separator='*' other/check-sort-input.txt
+END_OF_TEST
+)
+
+TEST_EXPECTED_OUTPUT=$(cat << END_OF_EXPECTED_OUTPUT
+correct *1
+correct *2
+correct *3
+correct *4
+END_OF_EXPECTED_OUTPUT
+)

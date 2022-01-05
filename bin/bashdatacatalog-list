@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 set -u
+set -e
 if [ ! -z ${DEBUG+x} ]; then
     set -x
 fi
@@ -207,27 +208,6 @@ while getopts "anstr:p:mwuf:c:" FLAG; do
 done
 shift $(($OPTIND-1))
 
-# Parse catalogs
-combined_catalog=$(mktemp)
-if [ $# -eq 0 ]; then
-    # implicit behaviour: cwd is treated as the only collection
-    bdcat-combine ./ > ${combined_catalog}
-else
-    bdcat-combine $@ > ${combined_catalog}
-fi
-
-while read COLLECTION_LINE; do
-    BDC_COLLECTION_PREFIX=$(echo "$COLLECTION_LINE" | awk -F',' '{print $1}' | sed 's#/*$#/#g')
-    BDC_COLLECTION_URL=$(echo "$COLLECTION_LINE" | awk -F',' '{print $2}' | sed 's#/*$#/#g')
-    mkdir -p $BDC_COLLECTION_PREFIX
-
-    (
-        cd $BDC_COLLECTION_PREFIX
-        list_collection
-    )
-done < ${combined_catalog}
-
-
-rm ${combined_catalog}
+source bashdatacatalog-execdir 'list_collection' $@
 
 # bashdatacatalog-list -am -f xargs-curl ../catalog1.csv | xargs curl | pv --line-mode --size 30

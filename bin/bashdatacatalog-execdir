@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+set -u
+if [ ! -z ${DEBUG+x} ]; then
+    set -x
+fi
+
+exec_arg=$1
+shift
+
+combined_catalog=$(mktemp)
+temp_file=$(mktemp)
+
+if [ "$#" -eq 0 ]; then
+    echo "${1},file://${PWD}/${1},1," >> ${combined_catalog}
+fi
+
+while [ $# -gt 0 ]; do
+    if [ -d ${1} ]; then
+        echo "${1},file://${PWD}/${1},1," >> ${combined_catalog}
+    elif [ -f ${1} ]; then
+        tail -n +2 ${1} >> ${combined_catalog}
+    fi
+
+    # Drop disabled and duplicate collections
+    awk -F',' '{ if($3 != 0){print $0} }' ${combined_catalog} | sort | uniq > ${temp_file}
+    cp ${temp_file} ${combined_catalog}
+
+    shift
+done
+
+while read COLLECTION_LINE; do
+    BDC_COLLECTION_PREFIX=$(echo "$COLLECTION_LINE" | awk -F',' '{print $1}' | sed 's#/*$#/#g')
+    BDC_COLLECTION_URL=$(echo "$COLLECTION_LINE" | awk -F',' '{print $2}' | sed 's#/*$#/#g')
+    mkdir -p $BDC_COLLECTION_PREFIX
+
+    (
+        cd $BDC_COLLECTION_PREFIX
+        eval ${exec_arg}
+    )
+done < ${combined_catalog}
+
+rm ${combined_catalog} ${temp_file}
