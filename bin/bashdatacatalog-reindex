@@ -16,6 +16,7 @@ function calc_md5sums() {
 function reindex_collection() {
     temp_file=$(mktemp)
     new_md5sums=$(mktemp)
+    diff_file=$(mktemp)
     bashdatacatalog-list ${list_options} -f rel . > ${temp_file}
     num_files=$(cat $temp_file | wc -l)
     if [ ${num_files} -gt 0 ]; then
@@ -26,9 +27,17 @@ function reindex_collection() {
             cat ${temp_file} | calc_md5sums | tee ${new_md5sums} | pv --progress --timer --line-mode --size ${num_files} --name "Reindexing ${num_files} files in '${BDC_COLLECTION_PREFIX}'" > /dev/null
         fi
         cat ${new_md5sums} .assets.md5 | sort --unique --key=2 --field-separator='*' > ${temp_file}
+
+        # Calculate diff to .assets.md5
+        diff -Nu .assets.md5 ${temp_file} > $diff_file
+        if [ $? -ne 0 ] ; then
+            mkdir -p .asset_patches
+            cp $diff_file .asset_patches/$(date -u +"%FT%H%MZ").patch
+        fi
+
         cp ${temp_file} .assets.md5
     fi 
-    rm ${temp_file} ${new_md5sums}
+    rm ${temp_file} ${new_md5sums} ${diff_file}
 }
 
 
