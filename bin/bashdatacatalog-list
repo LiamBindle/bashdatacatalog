@@ -152,6 +152,9 @@ function list_collection() {
     BDC_LIST_RANGE=${BDC_LIST_RANGE:=","}
     BDC_LIST_FORMAT=${BDC_LIST_FORMAT:="rel"}
     BDC_COLLECTION_PREFIX=${BDC_COLLECTION_PREFIX:=""}
+    if [ "${BDC_COLLECTION_PREFIX}" = "./" ]; then
+        BDC_COLLECTION_PREFIX=""
+    fi
 
     curl_write_out='(status %{http_code})  %{url} -> %{filename_effective}  [%{size_download} bytes]\\n'
     BDC_CURL_OPTIONS=${BDC_CURL_OPTIONS:="--write-out '${curl_write_out}' --fail --silent --insecure --netrc-optional --location --globoff --create-dirs"}

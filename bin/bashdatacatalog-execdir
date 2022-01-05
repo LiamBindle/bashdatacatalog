@@ -11,7 +11,7 @@ combined_catalog=$(mktemp)
 temp_file=$(mktemp)
 
 if [ "$#" -eq 0 ]; then
-    echo "${1},file://${PWD}/${1},1," >> ${combined_catalog}
+    echo "./,file://${PWD},1," >> ${combined_catalog}
 fi
 
 while [ $# -gt 0 ]; do

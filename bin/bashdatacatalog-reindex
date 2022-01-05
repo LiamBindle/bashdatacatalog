@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+set -u
+if [ ! -z ${DEBUG+x} ]; then
+    set -x
+fi
+
+list_options=$1
+shift
+
+BDC_SHOW_PROGRESS=${BDC_SHOW_PROGRESS:="true"}
+
+function calc_md5sums() {
+    xargs md5sum -b | sed 's#\([^ ][^ ]*\)  \(.*\)#\1 *\2#g'
+}
+
+function reindex_collection() {
+    temp_file=$(mktemp)
+    new_md5sums=$(mktemp)
+    bashdatacatalog-list ${list_options} -f rel . > ${temp_file}
+    num_files=$(cat $temp_file | wc -l)
+    if [ ${num_files} -gt 0 ]; then
+        if ! command -v pv &> /dev/null || [ ${BDC_SHOW_PROGRESS} = "false" ]; then
+            printf "Reindexing %i files in '%s' (options: %s)\n" "${num_files}" "${BDC_COLLECTION_PREFIX}" "${list_options}"
+            cat ${temp_file} | calc_md5sums | tee ${new_md5sums} | sed 's#^#  #g'
+        else 
+            cat ${temp_file} | calc_md5sums | tee ${new_md5sums} | pv --progress --timer --line-mode --size ${num_files} --name "Reindexing ${num_files} files in '${BDC_COLLECTION_PREFIX}'" > /dev/null
+        fi
+        cat ${new_md5sums} .assets.md5 | sort --unique --key=2 --field-separator='*' > ${temp_file}
+        cp ${temp_file} .assets.md5
+    fi 
+    rm ${temp_file} ${new_md5sums}
+}
+
+
+source bashdatacatalog-execdir 'reindex_collection' $@
+echo "Finished updating collections."
