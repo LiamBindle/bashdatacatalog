@@ -14,6 +14,8 @@ function generate_scoped_list() {
 
     [ -f .assets.md5 ] && awk -F ' +' '{print $2}' .assets.md5 | sed 's/^\*//g' > ${all_assets}
     [ -f .temporal_assets.sed ] && sed -n -f .temporal_assets.sed ${all_assets} | awk -F ' +' '{print $2}' > ${temporal_assets}
+    sort -o ${all_assets} ${all_assets}
+    sort -o ${temporal_assets} ${temporal_assets}
     comm -23 ${all_assets} ${temporal_assets} > ${static_assets}
 
     # Stage 1: Generate work list
@@ -27,6 +29,7 @@ function generate_scoped_list() {
 
     if [ "${BDC_LIST_NEW}" = true ]; then
         find -L . -name .asset_patches -prune -o -type f \( ! -name '\.*' \) -print | sort > ${temp_file}
+        sort -o ${temp_file} ${temp_file}
         comm -23 ${temp_file} ${all_assets} >> ${working_list}
     fi
 
@@ -80,8 +83,13 @@ function modify_list() {
     working_list=$1
     file_list=$(mktemp)
     temp_file=$(mktemp)
-
-    [ ! -z "${BDC_LIST_WHAT}" ] && find -L . -name .asset_patches -prune -o -type f \( ! -name '\.*' \) -print | sort > ${file_list}
+    
+    if [ ! -z "${BDC_LIST_WHAT}" ]; then
+        find -L . -name .asset_patches -prune -o -type f \( ! -name '\.*' \) -print | sort > ${file_list}
+        sort -o ${file_list} ${file_list}
+    fi
+    
+    sort -o ${working_list} ${working_list}
 
     case "${BDC_LIST_WHAT}" in
         missing)
@@ -160,7 +168,7 @@ function list_collection() {
         BDC_COLLECTION_PREFIX=""
     fi
 
-    curl_write_out='(status %{http_code})  %{url} -> %{filename_effective}  [%{size_download} bytes]\\n'
+    curl_write_out='(status %{http_code})  %{url_effective} -> %{filename_effective}  [%{size_download} bytes]\\n'
     BDC_CURL_OPTIONS=${BDC_CURL_OPTIONS:="--write-out '${curl_write_out}' --fail --silent --insecure --netrc-optional --location --globoff --create-dirs"}
     
     working_list=$(mktemp)
