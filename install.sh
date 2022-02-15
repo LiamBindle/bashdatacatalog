@@ -33,7 +33,7 @@ while true; do
             ENVIRONMENT_FILE=${ENVIRONMENT_FILE:-$HOME/.bashrc}
         done
 
-        ENTRY='export PATH=$PATH:'$INSTALL_PREFIX/.bashdatacatalog
+        ENTRY='export PATH=$PATH:'$INSTALL_PREFIX/.bashdatacatalog/bin
         grep -F "$ENTRY" $ENVIRONMENT_FILE || echo "$ENTRY" >> $ENVIRONMENT_FILE
         echo 'USER ACTION: bashdatacatalog is now available. Please restart your terminal.'
         break
