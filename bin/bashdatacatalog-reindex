@@ -12,7 +12,7 @@ See https://github.com/LiamBindle/bashdatacatalog/wiki for more documentation.
 
 Usage:
   bashdatacatalog-reindex -h                        Prints this help message and exits.
-  
+
   bashdatacatalog-reindex "FLAGS" CATALOG_FILE...   Reindexes active collections in the catalogs.
   bashdatacatalog-reindex "FLAGS" COLLECTION...     Reindexes the collections.
 
@@ -22,7 +22,7 @@ Usage:
 EOF
 )
 
-if [ "$1" = "-h" ]; then
+if [ "$#" -ge 1 ] && [ "$1" = "-h" ]; then
     echo "${usage_message}"
     exit 0
 fi

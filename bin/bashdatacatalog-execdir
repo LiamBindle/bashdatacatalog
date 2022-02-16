@@ -16,7 +16,7 @@ Usage:
 EOF
 )
 
-if [ "$1" = "-h" ]; then
+if [ "$#" -ge 1 ] && [ "$1" = "-h" ]; then
     echo "${usage_message}"
     exit 0
 fi

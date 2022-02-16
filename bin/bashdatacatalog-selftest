@@ -12,13 +12,13 @@ See https://github.com/LiamBindle/bashdatacatalog/wiki for more documentation.
 
 Usage:
   bashdatacatalog-selftest -h                   Prints this help message and exits.
-  
+
   bashdatacatalog-selftest                      Runs the unit tests.
         
 EOF
 )
 
-if [ "$1" = "-h" ]; then
+if [ "$#" -ge 1 ] && [ "$1" = "-h" ]; then
     echo "${usage_message}"
     exit 0
 fi
