@@ -5,6 +5,33 @@ if [ ! -z ${DEBUG+x} ]; then
     set -x
 fi
 
+usage_message=$(cat << EOF
+bashdatacatalog-list is a command-line tool that generates file lists to help
+synchronize local copies of data collections with remote data collections. 
+
+Usage: 
+  bashdatacatalog-list SCOPE... [MODIFIER] [OPTION]... CATALOG_FILE...
+
+Scope:
+  -a            all files (equivalent to -st)
+  -s            static files
+  -t            temporal files
+  -n            new files
+
+Modifiers:
+  -m            list missing files
+  -e            list existing files
+  -w            lists wrong files
+  -u            lists unnecessary files (implies -stn) 
+
+Options:
+  -p PATTERN    patterns matching
+  -r RANGE      range filter
+  -f FORMAT     list format
+
+EOF
+)
+
 function generate_scoped_list() {
     working_list=$1
     all_assets=$(mktemp)
