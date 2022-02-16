@@ -5,6 +5,24 @@ if [ ! -z ${DEBUG+x} ]; then
     set -x
 fi
 
+usage_message=$(cat << EOF
+Runs the bashdatacatalog unit tests. 
+
+See https://github.com/LiamBindle/bashdatacatalog/wiki for more documentation.
+
+Usage:
+  bashdatacatalog-selftest -h                   Prints this help message and exits.
+  
+  bashdatacatalog-selftest                      Runs the unit tests.
+        
+EOF
+)
+
+if [ "$1" = "-h" ]; then
+    echo "${usage_message}"
+    exit 0
+fi
+
 tests_passed=0
 
 function run_test() {

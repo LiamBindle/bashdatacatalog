@@ -4,6 +4,23 @@ if [ ! -z ${DEBUG+x} ]; then
     set -x
 fi
 
+usage_message=$(cat << EOF
+Execute a command in every active data collection. This command is intended for advanced users.
+
+See https://github.com/LiamBindle/bashdatacatalog/wiki for more documentation.
+
+Usage:
+  bashdatacatalog-execdir -h                    Prints this help message and exits.
+  bashdatacatalog-execdir CMD CATALOG_FILE...   Evaluates CMD in every active data collection. 
+        
+EOF
+)
+
+if [ "$1" = "-h" ]; then
+    echo "${usage_message}"
+    exit 0
+fi
+
 exec_arg=$1
 shift
 

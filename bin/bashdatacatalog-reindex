@@ -4,6 +4,29 @@ if [ ! -z ${DEBUG+x} ]; then
     set -x
 fi
 
+usage_message=$(cat << EOF
+Reindexes the data collections (calculate the checksums of assets). This command is intended for
+data providers.
+
+See https://github.com/LiamBindle/bashdatacatalog/wiki for more documentation.
+
+Usage:
+  bashdatacatalog-reindex -h                        Prints this help message and exits.
+  
+  bashdatacatalog-reindex "FLAGS" CATALOG_FILE...   Reindexes active collections in the catalogs.
+  bashdatacatalog-reindex "FLAGS" COLLECTION...     Reindexes the collections.
+
+  where "FLAGS" are bashdatacatalog-list flags that define the files that should be reindexed,
+   such as "-n" for new files or "-t -r '2021,'" for temporal files since 2021. Note that "FLAGS"
+   should be enclosed in quotes because it is a single argument. 
+EOF
+)
+
+if [ "$1" = "-h" ]; then
+    echo "${usage_message}"
+    exit 0
+fi
+
 list_options=$1
 shift
 

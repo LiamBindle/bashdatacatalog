@@ -6,29 +6,60 @@ if [ ! -z ${DEBUG+x} ]; then
 fi
 
 usage_message=$(cat << EOF
-bashdatacatalog-list is a command-line tool that generates file lists to help
-synchronize local copies of data collections with remote data collections. 
+bashdatacatalog-list is a command-line tool that generates file lists to help synchronize local
+copies of data collections with remote (upstream) data collections.
 
-Usage: 
-  bashdatacatalog-list SCOPE... [MODIFIER] [OPTION]... CATALOG_FILE...
+See https://github.com/LiamBindle/bashdatacatalog/wiki for more documentation.
 
-Scope:
-  -a            all files (equivalent to -st)
+Usage:
+
+  bashdatacatalog-list -h                   Prints this help message and exits.
+
+  bashdatacatalog-list SCOPE... [FILTER...] [MODIFIER] [FORMAT] CATALOG_FILE...
+  bashdatacatalog-list SCOPE... [FILTER...] [MODIFIER] [FORMAT] COLLECTION...
+
+Scopes:         (REQUIRED) Choose one or more flags to define the list's scope. 
+                The scope of the list will include:
+
+  -a            all files that are tracked (equivalent to -st)
   -s            static files
   -t            temporal files
   -n            new files
 
-Modifiers:
-  -m            list missing files
-  -e            list existing files
-  -w            lists wrong files
-  -u            lists unnecessary files (implies -stn) 
+Filters:        (optional) Choose one or more flags to filter out certain files. 
+                The list will only consider:
 
-Options:
-  -p PATTERN    patterns matching
-  -r RANGE      range filter
-  -f FORMAT     list format
+  -p "PATTERN"  files matching "PATTERN" (regex)
+  -r "RANGE"    files needed for date range "RANGE", 
+                 where "RANGE" is "SINCE_DATE," or "START_DATE,END_DATE",
+                 dates should use YYYY-MM-DD format,
+                 e.g., -r "2015-01-01,2020-12-31" or -r "2015-01-01,"
 
+Modifiers:      (optional) Choose one flags to list certain files.
+                The output list will be:
+
+  -m            missing files (files that are NOT present locally)
+  -e            existing files (files that ARE present locally)
+  -w            wrong files (files whose checksum does NOT match the remote),
+                 note that this option may take a significant amount of time
+  -u            unnecessary files (files that are not needed),
+                 typically used with the -r "RANGE" flag
+
+Formats:        (optional) Choose an output format.
+                Files in the list are formatted as:
+
+  -f rel        relative paths
+  -f abs        absolute paths
+  -f url        URLs of the remote files, useful for download data over HTTP
+                 compatible with wget --input-file
+  -f rsync      output list is compatible with the rsync --files-from argument,
+                 useful for downloading data over SSH with rsync
+  -f globus=S,D output list is compatible with globus --batch,
+                 S is the source endpoint, D is the destination endpoint,
+                 useful for downloading data with Globus
+  -f xargs-rm   output can be piped into xargs rm to delete the files in the list,
+                 typically used with -u to remove unnecessary files
+  -f xargs-curl output can be piped into xargs curl to download the files in the list  
 EOF
 )
 
@@ -210,7 +241,7 @@ function list_collection() {
     rm ${working_list}
 }
 
-while getopts "anstr:p:mwuf:c:e" FLAG; do
+while getopts "anstr:p:mwuf:c:eh" FLAG; do
     case "${FLAG}" in
         a)
             BDC_LIST_STATIC=true
@@ -249,10 +280,12 @@ while getopts "anstr:p:mwuf:c:e" FLAG; do
         f)
             BDC_LIST_FORMAT=${OPTARG}
             ;;
+        h)
+            echo "${usage_message}"
+            exit 0
+            ;;
     esac 
 done
 shift $(($OPTIND-1))
 
 source bashdatacatalog-execdir 'list_collection' $@
-
-# bashdatacatalog-list -am -f xargs-curl ../catalog1.csv | xargs curl | pv --line-mode --size 30
