@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+set -u
+if [ ! -z ${DEBUG+x} ]; then
+    set -x
+fi
+
+usage_message=$(cat << EOF
+Download the metadata for every active data collection in the catalog files. You need to fetch
+collection metadata with this command before you can run bashdatacatalog-list commands.
+
+See https://github.com/LiamBindle/bashdatacatalog/wiki for more documentation.
+
+Usage:
+  bashdatacatalog-fetch -h                  Prints this help message and exits.
+
+  bashdatacatalog-fetch CATALOG_FILE...     Fetches metadata for every active collection. 
+         
+EOF
+)
+
+if [ "$#" -ge 1 ] && [ "$1" = "-h" ]; then
+    echo "${usage_message}"
+    exit 0
+fi
+
+function download_file() {
+    URL=$1
+    FILE_PATH=$2
+    curl -f --silent -k -n -L -g --url $URL -o $FILE_PATH --create-dirs
+}
+
+function download_metadata() {
+    echo "Fetching metadata from '${BDC_COLLECTION_URL}'"
+    download_file ${BDC_COLLECTION_URL}/.assets.md5 .assets.md5 
+    if [ ! -f .assets.md5 ]; then
+        echo "Failed to download '.assets.md5' from ${BDC_COLLECTION_URL}"
+        exit 1 
+    fi
+    download_file ${BDC_COLLECTION_URL}/.temporal_assets.sed .temporal_assets.sed
+    download_file ${BDC_COLLECTION_URL}/.ignore.grep .ignore.grep
+}
+
+
+source bashdatacatalog-execdir 'download_metadata' $@

@@ -1,0 +1,68 @@
+#!/usr/bin/env bash
+set -u
+if [ ! -z ${DEBUG+x} ]; then
+    set -x
+fi
+
+usage_message=$(cat << EOF
+Reindexes the data collections (calculate the checksums of assets). This command is intended for
+data providers.
+
+See https://github.com/LiamBindle/bashdatacatalog/wiki for more documentation.
+
+Usage:
+  bashdatacatalog-reindex -h                        Prints this help message and exits.
+
+  bashdatacatalog-reindex "FLAGS" CATALOG_FILE...   Reindexes active collections in the catalogs.
+  bashdatacatalog-reindex "FLAGS" COLLECTION...     Reindexes the collections.
+
+  where "FLAGS" are bashdatacatalog-list flags that define the files that should be reindexed,
+   such as "-n" for new files or "-t -r '2021,'" for temporal files since 2021. Note that "FLAGS"
+   should be enclosed in quotes because it is a single argument. 
+EOF
+)
+
+if [ "$#" -ge 1 ] && [ "$1" = "-h" ]; then
+    echo "${usage_message}"
+    exit 0
+fi
+
+list_options=$1
+shift
+
+BDC_SHOW_PROGRESS=${BDC_SHOW_PROGRESS:="true"}
+
+function calc_md5sums() {
+    xargs md5sum -b | sed 's#\([^ ][^ ]*\)  \(.*\)#\1 *\2#g'
+}
+
+function reindex_collection() {
+    temp_file=$(mktemp)
+    new_md5sums=$(mktemp)
+    diff_file=$(mktemp)
+    bashdatacatalog-list ${list_options} -f rel . > ${temp_file}
+    num_files=$(cat $temp_file | wc -l)
+    if [ ${num_files} -gt 0 ]; then
+        if ! command -v pv &> /dev/null || [ ${BDC_SHOW_PROGRESS} = "false" ]; then
+            printf "Reindexing %i files in '%s' (options: %s)\n" "${num_files}" "${BDC_COLLECTION_PREFIX}" "${list_options}"
+            cat ${temp_file} | calc_md5sums | tee ${new_md5sums} | sed 's#^#  #g'
+        else 
+            cat ${temp_file} | calc_md5sums | tee ${new_md5sums} | pv --progress --timer --line-mode --size ${num_files} --name "Reindexing ${num_files} files in '${BDC_COLLECTION_PREFIX}'" > /dev/null
+        fi
+        cat ${new_md5sums} .assets.md5 | sort --unique --key=2 --field-separator='*' > ${temp_file}
+
+        # Calculate diff to .assets.md5
+        diff -Nu .assets.md5 ${temp_file} > $diff_file
+        if [ $? -ne 0 ] ; then
+            mkdir -p .asset_patches
+            cp $diff_file .asset_patches/$(date -u +"%FT%H%MZ").patch
+        fi
+
+        cp ${temp_file} .assets.md5
+    fi 
+    rm ${temp_file} ${new_md5sums} ${diff_file}
+}
+
+
+source bashdatacatalog-execdir 'reindex_collection' $@
+echo "Finished updating collections."

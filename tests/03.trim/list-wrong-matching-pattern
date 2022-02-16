@@ -1,0 +1,14 @@
+TEST_NAME="list wrong matching pattern"
+
+TEST_DIRECTORY=$(dirname $(which bashdatacatalog-list))/../sandbox
+
+TEST_COMMANDS=$(cat << END_OF_TEST
+bashdatacatalog-list -aw -p '2019' collection3
+END_OF_TEST
+)
+
+TEST_EXPECTED_OUTPUT=$(cat << END_OF_EXPECTED_OUTPUT
+./collection3/2019/file-20190203
+./collection3/2019/file-20190403
+END_OF_EXPECTED_OUTPUT
+)

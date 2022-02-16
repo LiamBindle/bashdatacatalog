@@ -1,0 +1,21 @@
+TEST_NAME="format urls"
+
+TEST_DIRECTORY=$(dirname $(which bashdatacatalog-list))/../sandbox
+
+TEST_COMMANDS=$(cat << END_OF_TEST
+bashdatacatalog-list -s -f url catalog1.csv 
+END_OF_TEST
+)
+
+TEST_EXPECTED_OUTPUT=$(cat << END_OF_EXPECTED_OUTPUT
+https://raw.githubusercontent.com/LiamBindle/bashdatacatalog/main/sandbox/collection1/file1
+https://raw.githubusercontent.com/LiamBindle/bashdatacatalog/main/sandbox/collection1/file2
+https://raw.githubusercontent.com/LiamBindle/bashdatacatalog/main/sandbox/collection1/file3
+https://raw.githubusercontent.com/LiamBindle/bashdatacatalog/main/sandbox/collection1/sub1/subfile1
+https://raw.githubusercontent.com/LiamBindle/bashdatacatalog/main/sandbox/collection1/sub1/subfile2
+https://raw.githubusercontent.com/LiamBindle/bashdatacatalog/main/sandbox/collection1/sub1/subfile3
+https://raw.githubusercontent.com/LiamBindle/bashdatacatalog/main/sandbox/collection2/file1
+https://raw.githubusercontent.com/LiamBindle/bashdatacatalog/main/sandbox/collection2/file2
+https://raw.githubusercontent.com/LiamBindle/bashdatacatalog/main/sandbox/collection2/file3
+END_OF_EXPECTED_OUTPUT
+)

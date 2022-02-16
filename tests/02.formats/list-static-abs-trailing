@@ -1,0 +1,15 @@
+TEST_NAME="format absolute paths with trailing slash"
+
+TEST_DIRECTORY=$(dirname $(dirname $(which bashdatacatalog-list)))/sandbox
+
+TEST_COMMANDS=$(cat << END_OF_TEST
+bashdatacatalog-list -s -f abs collection2/
+END_OF_TEST
+)
+
+TEST_EXPECTED_OUTPUT=$(cat << END_OF_EXPECTED_OUTPUT
+${TEST_DIRECTORY}/collection2/file1
+${TEST_DIRECTORY}/collection2/file2
+${TEST_DIRECTORY}/collection2/file3
+END_OF_EXPECTED_OUTPUT
+)

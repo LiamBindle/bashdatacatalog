@@ -1,0 +1,15 @@
+TEST_NAME="list unnecessary"
+
+TEST_DIRECTORY=$(dirname $(which bashdatacatalog-list))/../sandbox
+
+TEST_COMMANDS=$(cat << END_OF_TEST
+bashdatacatalog-list -u -r 2019-01-01,2020 collection2
+END_OF_TEST
+)
+
+TEST_EXPECTED_OUTPUT=$(cat << END_OF_EXPECTED_OUTPUT
+./collection2/2018/file-20181005
+./collection2/2018/file-20181105
+./collection2/2018/file-20181205
+END_OF_EXPECTED_OUTPUT
+)

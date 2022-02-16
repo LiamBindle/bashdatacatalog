@@ -19,13 +19,6 @@ A *data catalog* is a CSV file that defines a list of data collections to use.
 
 A catalog file includes the path to each collection, the URL of the remote data collection, and an enable/disable switch for each collection. An example of a data catalog would be a CSV file that defines the emissions data collections needed for GEOS-Chem version 13.2. Note that most `bashdatacatalog` commands operate on data catalogs, and multiple catalogs can be used in one command.
 
-## Instructions
-
-Detailed instructions for using the bashdatacatalog can be found in the Wiki:
-- [Instructions for GEOS-Chem Users](https://github.com/LiamBindle/bashdatacatalog/wiki/Instructions-for-GEOS-Chem-Users) - instructions for downloading GEOS-Chem input data with the bashdatacatalog
-- [Command Cheat Sheet](https://github.com/LiamBindle/bashdatacatalog/wiki/Command-Cheat-Sheet) - cheat sheet with useful commands
-- [Instructions for Data Providers](https://github.com/LiamBindle/bashdatacatalog/wiki/Instructions-for-Data-Providers) - instructions for maintaining data collections
-
 ## Installation
 
 The following command launches the bashdatacatalog installer. Follow the prompts. The defaults are usually okay (hit enter).
