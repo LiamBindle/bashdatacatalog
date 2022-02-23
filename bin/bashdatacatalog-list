@@ -92,9 +92,7 @@ function generate_scoped_list() {
     fi
 
     if [ "${BDC_LIST_CHANGED}" = true ] && [ -f .assets.md5 ]; then
-        find -L . -name .asset_patches -prune -o -type f \( ! -name '\.*' \) -newer .assets.md5 -print | sort > ${temp_file}
-        sort -o ${temp_file} ${temp_file}
-        comm -23 ${temp_file} ${all_assets} >> ${working_list}
+        find -L . -name .asset_patches -prune -o -type f \( ! -name '\.*' \) -newer .assets.md5 -print | sort >> ${working_list}
     fi
 
     # Sort working_list

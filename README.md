@@ -36,78 +36,7 @@ To update the bashdatacatalog run the following command.
 bashdatacatalog self-update
 ```
 
-## Demo
-
-The following is an example of using `bashdatacatalog` to download sample data from the sample catalog file [catalog1.csv](https://raw.githubusercontent.com/LiamBindle/bashdatacatalog/main/sandbox/catalog1.csv). Here is what that catalog file looks like:
-
-|Path to collection|Canonical collection (URL)                                                          |Enabled|Notes|
-|------------------|--------------------------------------------------------------------------------------|-------|-----|
-|collection1/      |https://raw.githubusercontent.com/LiamBindle/bashdatacatalog/main/sandbox/collection1/|1      |     |
-|collection2/      |https://raw.githubusercontent.com/LiamBindle/bashdatacatalog/main/sandbox/collection2/|1      |     |
-
-A catalog is a table where each row specifies a data collection. A row consists of: the relative path to the data collection, the URL of the remote data collection, a enable/disable switch, and a place to include notes about the collection. Take note that `catalog1.csv` has two collections.
-
-Download the catalog file. This is the catalog file that you will run queries on.
-```console
-$ wget https://raw.githubusercontent.com/LiamBindle/bashdatacatalog/main/sandbox/catalog1.csv
-```
-
-Before you can run queries on the catalog, you need to fetch the metadata for every collection in `catalog1.csv`:
-```console
-$ bashdatacatalog catalog1.csv fetch
-```
-
-Now that you have fetched the metadata, you can run queries on `catalog1.csv`. For example, here is a query that lists all the files that are currently missing locally:
-```console
-$ bashdatacatalog catalog1.csv list-missing
-./collection1/file1
-./collection1/file2
-./collection1/file3
-./collection1/sub1/subfile1
-./collection1/sub1/subfile2
-./collection1/sub1/subfile3
-./collection2/2018/file-20181005
-./collection2/2018/file-20181105
-./collection2/2018/file-20181205
-./collection2/2019/file-20190203
-./collection2/2019/file-20190403
-./collection2/2019/file-20190803
-./collection2/file1
-./collection2/file2
-./collection2/file3
-```
-
-The following query gives you a URL list for the missing files: 
-```console
-$ bashdatacatalog catalog1.csv list-missing url
-https://raw.githubusercontent.com/LiamBindle/bashdatacatalog/main/sandbox/collection1/file1
-https://raw.githubusercontent.com/LiamBindle/bashdatacatalog/main/sandbox/collection1/file2
-https://raw.githubusercontent.com/LiamBindle/bashdatacatalog/main/sandbox/collection1/file3
-https://raw.githubusercontent.com/LiamBindle/bashdatacatalog/main/sandbox/collection1/sub1/subfile1
-https://raw.githubusercontent.com/LiamBindle/bashdatacatalog/main/sandbox/collection1/sub1/subfile2
-https://raw.githubusercontent.com/LiamBindle/bashdatacatalog/main/sandbox/collection1/sub1/subfile3
-https://raw.githubusercontent.com/LiamBindle/bashdatacatalog/main/sandbox/collection2/2018/file-20181005
-https://raw.githubusercontent.com/LiamBindle/bashdatacatalog/main/sandbox/collection2/2018/file-20181105
-https://raw.githubusercontent.com/LiamBindle/bashdatacatalog/main/sandbox/collection2/2018/file-20181205
-https://raw.githubusercontent.com/LiamBindle/bashdatacatalog/main/sandbox/collection2/2019/file-20190203
-https://raw.githubusercontent.com/LiamBindle/bashdatacatalog/main/sandbox/collection2/2019/file-20190403
-https://raw.githubusercontent.com/LiamBindle/bashdatacatalog/main/sandbox/collection2/2019/file-20190803
-https://raw.githubusercontent.com/LiamBindle/bashdatacatalog/main/sandbox/collection2/file1
-https://raw.githubusercontent.com/LiamBindle/bashdatacatalog/main/sandbox/collection2/file2
-https://raw.githubusercontent.com/LiamBindle/bashdatacatalog/main/sandbox/collection2/file3
-```
-
-URL lists are compatible with the `--input-file` argument in wget. For example,
-```console
-$ bashdatacatalog catalog1.csv list-missing url > download_list.txt  # Generate URL list
-$ wget -nH -x --cut-dirs=4 --input-file=download_list.txt            # Download all the files
-```
-
-You can rerun the `list-missing` command to check that all the files are downloaded:
-```console
-$ bashdatacatalog catalog1.csv list-missing  # Shows nothing because all the files are downloaded
-$
-```
+## Example
 
 ## Alternatives
 
