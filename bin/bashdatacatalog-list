@@ -90,7 +90,7 @@ function generate_scoped_list() {
         sort -o ${temp_file} ${temp_file}
         comm -23 ${temp_file} ${all_assets} >> ${working_list}
     fi
-
+    
     if [ "${BDC_LIST_CHANGED}" = true ] && [ -f .assets.md5 ]; then
         find -L . -name .asset_patches -prune -o -type f \( ! -name '\.*' \) -newer .assets.md5 -print | sort >> ${working_list}
     fi
@@ -246,7 +246,7 @@ function list_collection() {
     rm ${working_list}
 }
 
-while getopts "anstr:p:mwuf:c:ech" FLAG; do
+while getopts "anstr:p:mwuf:ech" FLAG; do
     case "${FLAG}" in
         a)
             BDC_LIST_STATIC=true
