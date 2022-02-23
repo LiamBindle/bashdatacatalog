@@ -91,6 +91,12 @@ function generate_scoped_list() {
         comm -23 ${temp_file} ${all_assets} >> ${working_list}
     fi
 
+    if [ "${BDC_LIST_CHANGED}" = true ] && [ -f .assets.md5 ]; then
+        find -L . -name .asset_patches -prune -o -type f \( ! -name '\.*' \) -newer .assets.md5 -print | sort > ${temp_file}
+        sort -o ${temp_file} ${temp_file}
+        comm -23 ${temp_file} ${all_assets} >> ${working_list}
+    fi
+
     # Sort working_list
     sort -o ${working_list} ${working_list}
 
@@ -217,6 +223,7 @@ function list_collection() {
     BDC_LIST_STATIC=${BDC_LIST_STATIC:=false}
     BDC_LIST_TEMPORAL=${BDC_LIST_TEMPORAL:=false}
     BDC_LIST_NEW=${BDC_LIST_NEW:=false}
+    BDC_LIST_CHANGED=${BDC_LIST_CHANGED:=false}
     BDC_LIST_WHAT=${BDC_LIST_WHAT:=""}
     BDC_LIST_PATTERN=${BDC_LIST_PATTERN:=".*"}
     BDC_LIST_RANGE=${BDC_LIST_RANGE:=","}
@@ -241,7 +248,7 @@ function list_collection() {
     rm ${working_list}
 }
 
-while getopts "anstr:p:mwuf:c:eh" FLAG; do
+while getopts "anstr:p:mwuf:c:ech" FLAG; do
     case "${FLAG}" in
         a)
             BDC_LIST_STATIC=true
@@ -279,6 +286,11 @@ while getopts "anstr:p:mwuf:c:eh" FLAG; do
             ;;
         f)
             BDC_LIST_FORMAT=${OPTARG}
+            ;;
+        c)
+            # hidden option
+            # include "changed" files to list scope (modified date is newer than .assets.md5)
+            BDC_LIST_CHANGED=true
             ;;
         h)
             echo "${usage_message}"
