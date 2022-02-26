@@ -300,6 +300,10 @@ while getopts "anstr:p:mwuf:ech" FLAG; do
             ;;
     esac 
 done
+if [ $OPTIND -eq 1 ]; then
+    echo "error: no flags provided (at least one of following flags is required: -a, -s, -t, -n)" 1>&2
+    exit 1
+fi
 shift $(($OPTIND-1))
 
 source bashdatacatalog-execdir 'list_collection' $@
