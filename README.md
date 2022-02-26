@@ -13,29 +13,31 @@ _collection_ - A *data collection* is a data directory. A data collection may ha
 
 _catalog_ - A file that groups data colleciton together, and includes some details about the collections. A catalog file includes (1) the local paths to data collections, (2) the URLs of the data sources, and (3) boolean flags to enable/disable data collections.
 
-## Installation
+## Install
 
-The following command launches the bashdatacatalog installer. Follow the prompts. The defaults are usually okay (hit enter).
-```console
-bash <(curl -s https://raw.githubusercontent.com/LiamBindle/bashdatacatalog/main/utils/install.sh)
-```
-
-Ater restarting your terminal, you should be able to run `bashdatacatalog`.
-
-### Updating
-
-To update the bashdatacatalog run the following command.
+You can install the bashdatacatalog with the following command. Follow the prompts and restart your terminal.
 
 ```console
-bashdatacatalog self-update
+$ bash <(curl -s https://raw.githubusercontent.com/LiamBindle/bashdatacatalog/main/install.sh)
 ```
+
+_Note: This command upgrades the bashdatacatalog if it's already installed._
+
 
 ## Example
 
-## Alternatives
+1. Download a catalog file:
 
-Alternative data catalogging systems exist, notably [STAC](https://stacspec.org/) and [Intake](https://intake.readthedocs.io/en/latest/index.html). The bashdatacatalog could be thought of as a stepping stone towards more capable catalogging tools like these. The value proposition of the bashdatacatalog is it's the simplest way to set up a static data catalog. The design goals of the bashdatacatalog were:
-1. No dependencies (other than bash and ubiquitous utilities like curl)
-2. No coding required
-3. Easy to implement in unmanaged data repositories
-4. Easy to maintain operationally (automatically maintanable data collections)
+    ```console
+    $ curl https://raw.githubusercontent.com/LiamBindle/bashdatacatalog/main/sandbox/catalog1.csv -o catalog1.csv
+    ```
+
+2. Fetch collection metadata:
+    ```console
+    $ bashdatacatalog-fetch catalog1.csv
+    ```
+
+3. Run listing queries (e.g., download all missing files with 4 parallel downloads):
+    ```console
+    $ bashdatacatalog-list -am -f xargs-curl catalog1.csv | xargs -P 4 curl
+    ```
