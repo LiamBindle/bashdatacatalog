@@ -37,10 +37,15 @@ _Note: This command upgrades the bashdatacatalog if it's already installed._
     $ bashdatacatalog-fetch catalog1.csv
     ```
 
-3. Run listing queries (e.g., download all missing files with 4 parallel downloads):
+3. Run listing queries (e.g., download all missing files with 4 parallel download streams):
     ```console
     $ bashdatacatalog-list -am -f xargs-curl catalog1.csv | xargs -P 4 curl
     ```
 ## 💡 Documentation
 
 See the Wiki for instructions: https://github.com/LiamBindle/bashdatacatalog/wiki.
+
+Also, see
+```console
+$ bashdatacatalog-list -h
+```
