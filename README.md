@@ -5,7 +5,7 @@ The bashdatacatalog was written to facilitate downloading input data for users o
 
 _Note: Consider giving the bashdatacatalog a Star :star: if you find it useful. This increase visibility and helps justify maintaining this repository._
 
-## Key Terminology
+## 📋 Key Terminology
 
 Data is organized with _collections_ and _catalogs_.
 
@@ -13,7 +13,7 @@ _collection_ - A *data collection* is a data directory. A data collection may ha
 
 _catalog_ - A file that groups data colleciton together, and includes some details about the collections. A catalog file includes (1) the local paths to data collections, (2) the URLs of the data sources, and (3) boolean flags to enable/disable data collections.
 
-## Install
+## 💿 Install
 
 You can install the bashdatacatalog with the following command. Follow the prompts and restart your terminal.
 
@@ -24,7 +24,7 @@ $ bash <(curl -s https://raw.githubusercontent.com/LiamBindle/bashdatacatalog/ma
 _Note: This command upgrades the bashdatacatalog if it's already installed._
 
 
-## Example
+## 🎉 Example Usage
 
 1. Download a catalog file:
 
@@ -41,3 +41,6 @@ _Note: This command upgrades the bashdatacatalog if it's already installed._
     ```console
     $ bashdatacatalog-list -am -f xargs-curl catalog1.csv | xargs -P 4 curl
     ```
+## 💡 Documentation
+
+See the Wiki for instructions: https://github.com/LiamBindle/bashdatacatalog/wiki.
