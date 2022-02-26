@@ -111,7 +111,7 @@ function trim_scoped_list() {
         cp ${temp_file} ${working_list}
     fi
 
-    grep "${BDC_LIST_PATTERN}" ${working_list} > ${temp_file}
+    grep "${BDC_LIST_PATTERN}" ${working_list} > ${temp_file} || :
     cp ${temp_file} ${working_list}
 
     if [ -f .temporal_assets.sed ]; then
@@ -263,6 +263,8 @@ while getopts "anstr:p:mwuf:ech" FLAG; do
             ;;
         r)
             BDC_LIST_RANGE=${OPTARG}
+            VALID_REGEX='^[0-9][0-9][0-9][0-9]\(-[0-1][0-9]\)\?\(-[0-3][0-9]\)\?,\([0-9][0-9][0-9][0-9]\(-[0-1][0-9]\)\?\(-[0-3][0-9]\)\?\)\?$'
+            echo ${BDC_LIST_RANGE} | grep "${VALID_REGEX}" &> /dev/null || { echo "error: invalid date range \"${BDC_LIST_RANGE}\"" 1>&2; exit 1; }
             ;;
         p)
             BDC_LIST_PATTERN=${OPTARG}
@@ -284,6 +286,8 @@ while getopts "anstr:p:mwuf:ech" FLAG; do
             ;;
         f)
             BDC_LIST_FORMAT=${OPTARG}
+            VALID_REGEX='^\(rel\)$\|^\(abs\)$\|^\(url\)$\|^\(rsync\)$\|^\(xargs-rm\)$\|^\(xargs-curl\)$\|^\(globus=[^ ][^ ]*,[^ ][^ ]*\)'
+            echo ${BDC_LIST_FORMAT} | grep "${VALID_REGEX}" &> /dev/null || { echo "error: invalid format \"${BDC_LIST_FORMAT}\"" 1>&2; exit 1; }
             ;;
         c)
             # hidden option

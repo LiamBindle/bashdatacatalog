@@ -28,7 +28,8 @@ combined_catalog=$(mktemp)
 temp_file=$(mktemp)
 
 if [ "$#" -eq 0 ]; then
-    echo "./,file://${PWD},1," >> ${combined_catalog}
+    echo "error: no catalogs or collections provided" 1>&2
+    exit 1 
 fi
 
 while [ $# -gt 0 ]; do
@@ -46,6 +47,11 @@ while [ $# -gt 0 ]; do
 done
 
 while read COLLECTION_LINE; do
+    num_commas=$(echo "$COLLECTION_LINE" | awk -F',' '{print NF-1}')
+    if [ $num_commas -ne 3 ]; then
+           echo "error: incorrect number of columns in a catalog (there should be 4 columns; check for blank or trailing lines)" 1>&2
+           exit 1
+    fi
     BDC_COLLECTION_PREFIX=$(echo "$COLLECTION_LINE" | awk -F',' '{print $1}' | sed 's#/*$#/#g')
     BDC_COLLECTION_URL=$(echo "$COLLECTION_LINE" | awk -F',' '{print $2}' | sed 's#/*$#/#g')
     mkdir -p $BDC_COLLECTION_PREFIX
