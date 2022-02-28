@@ -5,11 +5,11 @@ The bashdatacatalog was written to facilitate downloading input data for users o
 
 _Note: Consider giving the bashdatacatalog a Star :star: if you find it useful. This increase visibility and helps justify maintaining this repository._
 
-## 📋 Key Terminology
+## 📋 Key Terms
 
 Data is organized with _collections_ and _catalogs_.
 
-_collection_ - A *data collection* is a data directory. A data collection may have any number of files, any types of files, and have subdirectories.
+_collection_ - A *data collection* is a directory (folder) that has data files. A data collection may have any number of files, any types of files, and have subdirectories.
 
 _catalog_ - A file that groups data colleciton together, and includes some details about the collections. A catalog file includes (1) the local paths to data collections, (2) the URLs of the data sources, and (3) boolean flags to enable/disable data collections.
 
@@ -43,9 +43,11 @@ _Note: This command upgrades the bashdatacatalog if it's already installed._
     ```
 ## 💡 Documentation
 
-See the Wiki for instructions: https://github.com/LiamBindle/bashdatacatalog/wiki.
+See the Wiki for documentation on using the bashdatacatalog: https://github.com/LiamBindle/bashdatacatalog/wiki.
 
-Also, see
+If you are a GEOS-Chem user, see the standalone instructions for GEOS-Chem users [here](https://github.com/LiamBindle/bashdatacatalog/wiki/Instructions-for-GEOS-Chem-Users).
+
+For options and arguments to the `bashdatacatalog-list` command, see
 ```console
 $ bashdatacatalog-list -h
 ```
