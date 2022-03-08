@@ -107,7 +107,7 @@ function trim_scoped_list() {
     trim_list=$(mktemp)
     
     if [ -f .ignore.grep ]; then
-        grep -v -f .ignore.grep ${working_list} > ${temp_file}
+        grep -v -f .ignore.grep ${working_list} > ${temp_file} || :
         cp ${temp_file} ${working_list}
     fi
 
@@ -134,7 +134,7 @@ function trim_scoped_list() {
             awk -F ' +' -v threshold=${RANGE_END} "$AWK_CMP_GT" ${temp_file} >> ${trim_list}
         fi
         
-        grep -v -F -f ${trim_list} ${working_list} > ${temp_file}
+        grep -v -F -f ${trim_list} ${working_list} > ${temp_file} || :
         cp ${temp_file} ${working_list}
     fi
 
