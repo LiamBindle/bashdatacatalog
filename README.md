@@ -11,7 +11,7 @@ Data is organized with _collections_ and _catalogs_.
 
 _collection_ - A *data collection* is a directory (folder) that has data files. A data collection may have any number of files, any types of files, and have subdirectories.
 
-_catalog_ - A file that groups data colleciton together, and includes some details about the collections. A catalog file includes (1) the local paths to data collections, (2) the URLs of the data sources, and (3) boolean flags to enable/disable data collections.
+_catalog_ - A file that lists collections and collection settings. A catalog file includes (1) the local paths to data collections, (2) the URLs of the data sources, and (3) boolean flags to enable/disable data collections.
 
 ## 💿 Install
 
